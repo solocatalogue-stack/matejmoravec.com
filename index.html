@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matěj Moravec Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+</head><body style="margin:0">
+<style>
+/* Layout: white page, one Helvetica bar (name / Works / About / Contact). Works opens floating tag bubbles; a picked bubble grows into the page colour and filters the masonry grid. A project opens as a full-page sheet. Deliberately single white theme. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --ink: #111111;
+  --muted: #8a8a86;
+  --soft: rgba(0,0,0,.06);
+  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --c-posters: #f7efc9;
+  --c-web: #cfdcf2;
+  --c-anim: #f9cdbb;
+  --c-exhib: #d6ecd8;
+  --c-brand: #e6d6f2;
+  --c-print: #f3d6e1;
+  --c-inst: #d3ebeb;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; overflow-x: hidden; }
+.gut { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#wash { position: fixed; inset: 0; background: var(--bg); z-index: 0; transition: background-color .5s ease; }
+#grow { position: fixed; border-radius: 999px; z-index: 1; pointer-events: none; }
+
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; padding-block: 18px 10px; }
+nav { display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap; }
+nav .name { font: inherit; font-weight: 700; margin-right: auto; letter-spacing: -.01em; background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer; }
+nav button, nav a { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
+nav button[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; }
+button:focus-visible, a:focus-visible, .tile:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+#worksWrap { position: relative; }
+
+#cloud { position: absolute; left: 50%; top: 100%; width: 400px; max-width: 88vw; height: 220px; transform: translateX(-38%); pointer-events: none; opacity: 0; transition: opacity .25s ease; }
+#worksWrap.open #cloud { opacity: 1; pointer-events: auto; }
+.bubble { position: absolute; font: inherit; font-size: 14px; color: var(--ink); border: 0; cursor: pointer; padding: 9px 16px; border-radius: 999px; white-space: nowrap; transform: scale(.4); opacity: 0; transition: transform .45s cubic-bezier(.2,1.4,.4,1), opacity .3s ease, filter .2s; box-shadow: 0 1px 0 rgba(0,0,0,.04); }
+#worksWrap.open .bubble { transform: scale(1); opacity: 1; }
+.bubble span { display: inline-block; animation: float 5s ease-in-out infinite; }
+.bubble:hover { filter: brightness(.96); }
+.bubble.on { outline: 1.5px solid var(--ink); }
+.bubble small { font-size: 11px; color: rgba(0,0,0,.45); margin-left: 4px; }
+@keyframes float { 0%,100% { transform: translate(0,0) } 33% { transform: translate(2px,-4px) } 66% { transform: translate(-3px,2px) } }
+
+#active { position: relative; z-index: 15; min-height: 34px; }
+.chip { font: inherit; font-size: 14px; border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; background: rgba(255,255,255,.7); color: var(--ink); }
+.chip::after { content: " ×"; color: var(--muted); }
+
+main { position: relative; z-index: 5; padding-block: 18px 80px; }
+#grid { columns: 4 230px; column-gap: 18px; }
+.tile { display: block; width: 100%; break-inside: avoid; margin: 0 0 22px; padding: 0; border: 0; background: none; text-align: left; font: inherit; color: var(--ink); cursor: pointer; transition: opacity .45s ease, transform .45s ease; }
+.tile.out { opacity: 0; transform: translateY(14px); }
+.tile .img { position: relative; border-radius: 3px; overflow: hidden; background: var(--soft); }
+.tile img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.tile:hover img { transform: scale(1.03); }
+.tile h3 { font-size: 14px; font-weight: 400; margin: 9px 0 0; }
+.tile p { font-size: 12px; color: rgba(0,0,0,.5); margin: 3px 0 0; }
+.fallback { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 12px; font-size: 13px; color: rgba(0,0,0,.55); }
+
+/* project sheet + about/contact sheet */
+.sheet { position: fixed; inset: 0; z-index: 40; overflow-y: auto; background: var(--bg); padding-block: calc(env(safe-area-inset-top, 0px) + 18px) 80px; opacity: 0; transform: translateY(24px); transition: opacity .35s ease, transform .35s ease; }
+.sheet.show { opacity: 1; transform: none; }
+.sheet .bar { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.sheet .close { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); }
+.sheet h2 { font-size: clamp(28px, 5vw, 56px); font-weight: 400; letter-spacing: -.025em; line-height: 1.02; margin: 48px 0 0; text-wrap: balance; max-width: 18ch; }
+.meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.meta span { font-size: 12px; padding: 5px 11px; border-radius: 999px; }
+.lede { max-width: 58ch; font-size: 17px; line-height: 1.45; margin: 26px 0 0; }
+.shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 40px; align-items: start; }
+.shots .img { position: relative; border-radius: 3px; overflow: hidden; background: var(--soft); }
+.shots img { display: block; width: 100%; }
+.shots .fallback { position: static; min-height: 220px; }
+.sheet .link { display: inline-block; margin-top: 36px; color: var(--ink); font-size: 14px; }
+.info p { max-width: 58ch; font-size: 17px; line-height: 1.45; margin: 22px 0 0; }
+.info dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin-top: 36px; font-size: 15px; }
+.info dt { color: var(--muted); }
+.info dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.info h3 { font-size: 15px; font-weight: 700; margin: 48px 0 0; }
+.info h3 + dl { margin-top: 14px; }
+.info dd button { font: inherit; font-size: 12px; margin-left: 8px; border: 1px solid #ddd; background: none; border-radius: 999px; padding: 2px 9px; cursor: pointer; color: var(--ink); }
+
+@media (max-width: 560px) {
+  nav { gap: 16px; }
+  #cloud { transform: translateX(-58%); height: 250px; }
+  #grid { columns: 2; column-gap: 12px; }
+  .tile { margin-bottom: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .bubble span { animation: none; } * { transition-duration: .01s !important; } }
+</style>
+
+<div id="wash"></div>
+<div id="grow"></div>
+
+<header class="gut">
+  <nav>
+    <button class="name" id="home">Matěj Moravec</button>
+    <div id="worksWrap">
+      <button id="works" aria-expanded="false" aria-controls="cloud">Works</button>
+      <div id="cloud" role="menu" aria-label="Filter works by tag"></div>
+    </div>
+    <button id="aboutBtn">About</button>
+    <button id="contactBtn">Contact</button>
+  </nav>
+</header>
+
+<div id="active" class="gut"></div>
+<main class="gut"><div id="grid"></div></main>
+<div id="sheet" class="sheet gut" hidden role="dialog" aria-modal="true"></div>
+
+<script>
+const U = "https://matejmoravec.com/wp-content/uploads/";
+const TAGS = [
+  { id: "posters", label: "Posters", c: "--c-posters", x: 4, y: 18 },
+  { id: "web", label: "Webdesign", c: "--c-web", x: 118, y: 4 },
+  { id: "anim", label: "Animations", c: "--c-anim", x: 30, y: 74 },
+  { id: "exhib", label: "Exhibitions", c: "--c-exhib", x: 160, y: 60 },
+  { id: "brand", label: "Branding", c: "--c-brand", x: 250, y: 22 },
+  { id: "print", label: "Printed", c: "--c-print", x: 80, y: 128 },
+  { id: "inst", label: "Installations", c: "--c-inst", x: 196, y: 116 }
+];
+// cover: [path, w, h]; shots: up to five detail images
+const PROJECTS = [
+  { slug: "shareman", title: "Shareman", years: "2025–now", tags: ["brand", "web", "anim", "print"],
+    text: "Took over the visual language of Shareman, first designed by Hymn.Design, and grew it across animation, internal and external communication, websites and microsites, with new versions of the mascot and small logo refinements for each product.",
+    cover: ["2026/07/Mr_Shareman.gif", 1, 1],
+    shots: ["2026/07/Hotel.webp", "2026/07/Residential-2-Shine-1.webp", "2026/07/sh_logo-update.webp", "2026/07/sh-tshirt-fem.webp", "2026/07/para-900_MMC.webp"] },
+  { slug: "pulse-records", title: "Pulse Records", years: "2023–now", tags: ["brand", "anim", "posters", "print"],
+    text: "Logo, visual language, posters, music releases and merch for Pulse Records, a Lausanne label for modern dance music with a twist of nostalgia.",
+    cover: ["2023/10/Pulse1_POSTER_STREET.png", 1, 1],
+    shots: ["2023/10/black-pulse-rec-logo@2x-e1717017898759.png", "2024/05/Pulse-2-Casette-Mockup.jpg", "2024/05/PEP001-Entelechia_Hydrozoa-Casette-Mockup.webp", "2024/05/Artboard-6.webp", "2026/07/IMG_6606.webp"] },
+  { slug: "various-posters", title: "Various Posters", years: "2020–2025", tags: ["posters", "print"],
+    text: "Graphic and typographic posters for cultural and selected commercial clients, mixing grids, illustration and expressive lettering. Some were shown at the Antwerp Poster Festival, featured by Poster Tribune and published in Poster and Typography (Hong Kong).",
+    cover: ["2025/11/Plakat-75-55-2.webp", 265, 361],
+    shots: ["2025/11/OMEN-28-03-25-copy.webp", "2025/11/SVU-25-pozvanka_148-x-210_1.webp", "2020/09/Effugio-PRINT.jpg", "2020/03/Kmitocet.jpg", "2020/09/GAMU-1-Final-poster-A3_2-01.jpg"] },
+  { slug: "pulse-av-show", title: "Pulse AV Show", years: "La Gravière, Geneva", tags: ["anim", "inst"],
+    text: "A full audio-reactive video system for a live electronic music night at La Gravière in Geneva.",
+    cover: ["2026/07/pulse-av-6.webp", 265, 345],
+    shots: ["2026/07/pulse-av-1.webp", "2026/07/pulse-av-3.webp", "2026/07/DSC01743-copy.webp", "2026/07/DSC01927-copy.webp"] },
+  { slug: "tepe", title: "T.E.P.E.", years: "Oliver Torr · SHAPE Platform", tags: ["web", "posters", "print", "anim", "brand"],
+    text: "Identity and communication for Community–Music, an album built from hometown sound samples sent by musicians across Europe. Posters, sticker packs, cassettes and a website, inspired by postal and delivery systems with a futuristic feel.",
+    cover: ["2026/07/tepe-oliver-torr.webp", 265, 334],
+    shots: ["2023/10/TEPE-Poster-V52_2.jpg", "2026/07/TEPE.gif", "2023/10/HQ3A3084-copy-min-1280x854-1.jpg", "2026/07/post_products.webp", "2026/07/Artboard-1-copy-2_2x-100-1.webp"] },
+  { slug: "purple-membranes", title: "Pavel Příkaský: Purple Membranes", years: "2023 · GKK Klenová", tags: ["exhib", "posters", "print", "inst"],
+    text: "Exhibition design and identity for a painter working with environmental themes through myth. Wooden panelling frames some of the paintings and guides visitors through the rooms. Concept, typography and print.",
+    cover: ["2023/02/gkk-pp-2-min.jpg", 265, 375],
+    shots: ["2023/02/gkk-pp-min.jpg", "2023/02/gkk-pp-8-min.jpg", "2023/02/gkk-pp-6-min.jpg", "2023/02/gkk-pp-0-min.jpg", "2023/02/gkk-pp-4-min.jpg"] },
+  { slug: "chiquita", title: "Chiquita", years: "2017–2021", tags: ["brand", "print", "posters"],
+    text: "Lead graphic designer for Chiquita's global marketing: promotions, key communications, brand guidelines for new territories and work with partner agencies. Highlights include the London bus wrap, a VR sustainability experience, the 2020/21 Sustainability Report and the Fitness Stickers concept.",
+    cover: ["2022/06/A-070920-Road-London-CS-Chiquita-11-min-min.jpg", 265, 177],
+    shots: ["2020/08/01-07-19-Chiquita-3.jpg", "2022/06/A-070920-Road-London-CS-Chiquita-19-min-min.jpg", "2024/05/VR-2.png", "2024/05/S-Report-1-1.webp", "2020/08/Mindfulness_2_Fitness_Stickers_Chiquita.jpg"] },
+  { slug: "chopstix", title: "Chopstix", years: "Lausanne", tags: ["brand", "anim", "posters", "print"],
+    text: "New logo for a family-run Vietnamese bistro in Lausanne, with a hand-painted sign, animated screen menus and printed menus that keep the place's warm feel.",
+    cover: ["2023/10/food.jpg", 265, 403],
+    shots: ["2023/10/Chopstix-Logo-Black-e1717017867755.jpg", "2026/07/2023-08-02-18-24-36.webp", "2026/07/2023-08-02-18-17-26.webp"] },
+  { slug: "eeproperty", title: "eeproperty website", years: "Lutry & Zurich", tags: ["web"],
+    text: "Website for a Swiss PropTech company that brings laundry systems, EV charging, solar energy management and accounting for shared buildings into one product.",
+    cover: ["2026/07/Screenshot-2026-07-30-at-15.34.28.webp", 265, 150],
+    shots: ["2026/07/eeweb_cover.gif", "2026/07/Screenshot-2026-07-30-at-15.41.21.webp", "2026/07/home.webp"] },
+  { slug: "ddc-coaching", title: "DDC Coaching", years: "Vevey", tags: ["web", "anim"],
+    text: "Design, animation and WordPress build for a career coaching team in Vevey, drawing on a triangle poster from the portfolio.",
+    cover: ["2024/05/Artboard-12.webp", 265, 177],
+    shots: ["2026/07/Screenshot-2026-07-29-at-15.13.25.webp", "2026/07/Screenshot-2026-07-29-at-15.13.16.webp"] }
+];
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tagById = id => TAGS.find(t => t.id === id);
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const cloud = $("#cloud"), wrap = $("#worksWrap"), worksBtn = $("#works");
+const wash = $("#wash"), grow = $("#grow"), grid = $("#grid"), active = $("#active"), sheet = $("#sheet");
+let current = null, closeT;
+
+// image with a soft placeholder if the file can't load
+function pic(path, label, tint) {
+  const box = document.createElement("div");
+  box.className = "img";
+  const img = new Image();
+  img.loading = "lazy"; img.alt = label; img.src = U + path;
+  img.onerror = () => { img.remove(); const f = document.createElement("div"); f.className = "fallback"; f.style.background = tint; f.textContent = label; box.appendChild(f); };
+  box.appendChild(img);
+  return box;
+}
+
+TAGS.forEach((t, i) => {
+  const n = PROJECTS.filter(p => p.tags.includes(t.id)).length;
+  const b = document.createElement("button");
+  b.className = "bubble"; b.setAttribute("role", "menuitem"); b.dataset.id = t.id;
+  b.style.background = css(t.c); b.style.left = t.x + "px"; b.style.top = t.y + "px";
+  b.style.transitionDelay = (i * 35) + "ms";
+  b.innerHTML = `<span style="animation-delay:${-i * 0.7}s;animation-duration:${4 + (i % 3)}s">${t.label}<small>${n}</small></span>`;
+  b.addEventListener("click", e => { e.stopPropagation(); choose(t, b); });
+  cloud.appendChild(b);
+});
+
+PROJECTS.forEach(p => {
+  const t = document.createElement("button");
+  t.className = "tile"; t.dataset.slug = p.slug;
+  const box = pic(p.cover[0], p.title, css(tagById(p.tags[0]).c));
+  box.style.aspectRatio = `${p.cover[1]} / ${p.cover[2]}`;
+  t.appendChild(box);
+  t.insertAdjacentHTML("beforeend", `<h3>${esc(p.title)}</h3><p>${esc(p.years)} · ${p.tags.map(id => tagById(id).label).join(", ")}</p>`);
+  t.addEventListener("click", () => openProject(p));
+  grid.appendChild(t);
+});
+
+function openMenu() { clearTimeout(closeT); wrap.classList.add("open"); worksBtn.setAttribute("aria-expanded", "true"); }
+function closeMenu() { wrap.classList.remove("open"); worksBtn.setAttribute("aria-expanded", "false"); }
+if (matchMedia("(hover: hover)").matches) {
+  wrap.addEventListener("mouseenter", openMenu);
+  wrap.addEventListener("mouseleave", () => { closeT = setTimeout(closeMenu, 250); });
+}
+worksBtn.addEventListener("click", e => { e.stopPropagation(); wrap.classList.contains("open") ? closeMenu() : openMenu(); });
+document.addEventListener("click", e => { if (!wrap.contains(e.target)) closeMenu(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeMenu(); closeSheet(); } });
+
+function filterGrid(id) {
+  [...grid.children].forEach((el, i) => {
+    const p = PROJECTS.find(x => x.slug === el.dataset.slug);
+    const show = !id || p.tags.includes(id);
+    el.classList.add("out");
+    setTimeout(() => { el.hidden = !show; if (show) setTimeout(() => el.classList.remove("out"), 30 + i * 60); }, 300);
+  });
+}
+
+function choose(t, bubble) {
+  if (current === t.id) return;
+  current = t.id;
+  const color = css(t.c);
+  const r = bubble.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const far = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy));
+  const size = r.height;
+  Object.assign(grow.style, { transition: "none", width: size + "px", height: size + "px", left: (cx - size / 2) + "px", top: (cy - size / 2) + "px", background: color, transform: "scale(1)", opacity: 1 });
+  grow.getBoundingClientRect();
+  grow.style.transition = "transform .75s cubic-bezier(.6,0,.2,1)";
+  grow.style.transform = `scale(${(far * 2.1) / size})`;
+  document.querySelectorAll(".bubble").forEach(b => b.classList.toggle("on", b.dataset.id === t.id));
+  setTimeout(() => { wash.style.transition = "none"; wash.style.background = color; grow.style.opacity = 0; closeMenu(); }, 760);
+  active.innerHTML = "";
+  const chip = document.createElement("button");
+  chip.className = "chip"; chip.textContent = t.label; chip.setAttribute("aria-label", `Remove filter ${t.label}`);
+  chip.addEventListener("click", reset);
+  active.appendChild(chip);
+  filterGrid(t.id);
+}
+
+function reset() {
+  if (!current) return;
+  current = null;
+  wash.style.transition = "background-color .5s ease"; wash.style.background = css("--bg");
+  document.querySelectorAll(".bubble").forEach(b => b.classList.remove("on"));
+  active.innerHTML = "";
+  filterGrid(null);
+}
+
+function showSheet(html, bg) {
+  sheet.innerHTML = html;
+  sheet.style.background = bg || css("--bg");
+  sheet.hidden = false; sheet.scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  requestAnimationFrame(() => sheet.classList.add("show"));
+  sheet.querySelector(".close").addEventListener("click", closeSheet);
+  sheet.querySelector(".close").focus();
+}
+function closeSheet() {
+  if (sheet.hidden) return;
+  sheet.classList.remove("show");
+  document.body.style.overflow = "";
+  document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
+  setTimeout(() => { sheet.hidden = true; sheet.innerHTML = ""; }, 350);
+}
+
+function openProject(p) {
+  const tint = current ? css(tagById(current).c) : css("--bg");
+  const chips = p.tags.map(id => `<span style="background:${current ? "rgba(255,255,255,.65)" : css(tagById(id).c)}">${tagById(id).label}</span>`).join("");
+  showSheet(`<div class="bar"><strong>Matěj Moravec</strong><button class="close">Close ×</button></div>
+    <h2>${esc(p.title)}</h2><div class="meta"><span style="background:transparent;padding-left:0">${esc(p.years)}</span>${chips}</div>
+    <p class="lede">${esc(p.text)}</p><div class="shots"></div>
+    <a class="link" href="https://matejmoravec.com/" target="_blank" rel="noopener">matejmoravec.com ↗</a>`, tint);
+  const shots = sheet.querySelector(".shots");
+  [p.cover[0], ...p.shots].slice(0, 5).forEach(s => shots.appendChild(pic(s, p.title, "rgba(0,0,0,.06)")));
+}
+
+// Assembled at runtime so the address never appears as plain text in the page source
+const EMAIL = ["moc.cevaromjetam", "johA"].map(s => [...s].reverse().join("")).reverse().join(String.fromCharCode(64)).toLowerCase();
+function openInfo(which) {
+  document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
+  $(which === "about" ? "#aboutBtn" : "#contactBtn").setAttribute("aria-pressed", "true");
+  const about = `<h2>Art director and visual designer, born in Prague, based in Lausanne.</h2>
+    <p>I work across typography, motion and audiovisual media. I first earned an associate degree in graphic design and printed media at the Graphic School in Prague. I then studied type design, typography and visual communication at the Academy of Arts, Architecture and Design in Prague (UMPRUM), including a year at the Willem de Kooning Academy in Rotterdam.</p>
+    <p>I've worked on commercial, cultural and independent projects, from global brand work for Chiquita to collaborations with Balmer Hählen in Lausanne and Marvil in Prague. I co-founded the label Pulse Records and make music as Nathan Solo.</p>`;
+  const cv = `<h3>Experience</h3><dl>
+    <dt>2025–now</dt><dd>Senior Visual Design Lead, eeproperty, Lutry</dd>
+    <dt>2012–now</dt><dd>Independent graphic and motion design practice</dd>
+    <dt>2017–2022</dt><dd>Lead Graphic Designer (Global), Chiquita, Etoy</dd>
+    <dt>2016–2017</dt><dd>Art Director, ACSTUDIO.CH, Lausanne</dd>
+    <dt>2016–2017</dt><dd>Graphic Designer, Balmer Hählen, Lausanne</dd>
+    <dt>2015–2016</dt><dd>Graphic Designer, Studio Marvil, Prague</dd>
+    <dt>2011–2015</dt><dd>Creative Team Leader, Silicon Jelly, Prague</dd></dl>
+    <h3>Recognition</h3><dl>
+    <dt>2021</dt><dd>High-Tone Publishing, Hong Kong: poster and type design publication</dd>
+    <dt>2020</dt><dd>Antwerp Poster Festival, finalist</dd>
+    <dt>2020</dt><dd>Typo/graphic Posters, published article</dd>
+    <dt>2019</dt><dd>Mut zur Wut, finalist</dd>
+    <dt>2019</dt><dd>Poster Tribune #10, featured portfolio</dd>
+    <dt>2013</dt><dd>Best European Game Awards, nominations for art direction and game design</dd></dl>
+    <h3>Contact</h3>`;
+  const contact = `<dl>
+    <dt>Email</dt><dd><a id="mail" href="mailto:${EMAIL}" style="color:inherit">${EMAIL}</a><button id="copy">Copy</button></dd>
+    <dt>Instagram</dt><dd><a href="https://instagram.com/matejmoravec_com" target="_blank" rel="noopener" style="color:inherit">@matejmoravec_com</a></dd>
+    <dt>Music</dt><dd><a href="https://nathansolo.com" target="_blank" rel="noopener" style="color:inherit">nathansolo.com</a></dd>
+    <dt>Based in</dt><dd>Lausanne, Switzerland</dd></dl>`;
+  showSheet(`<div class="bar"><strong>${which === "about" ? "About" : "Contact"}</strong><button class="close">Close ×</button></div>
+    <div class="info">${which === "about" ? about + cv + contact : `<h2>Say hello.</h2>` + contact}</div>`);
+  const copy = $("#copy");
+  copy.addEventListener("click", () => {
+    navigator.clipboard.writeText(EMAIL).then(() => { copy.textContent = "Copied"; }).catch(() => {
+      const r = document.createRange(); r.selectNodeContents($("#mail")); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    });
+  });
+}
+$("#aboutBtn").addEventListener("click", () => openInfo("about"));
+$("#contactBtn").addEventListener("click", () => openInfo("contact"));
+$("#home").addEventListener("click", () => { closeSheet(); reset(); });
+</script>
+</body></html>
