@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matěj Moravec</title>
+<script>
+// Old WordPress addresses → the matching project on the new one-page site
+const OLD = {
+  "shareman": "shareman", "pulse-records": "pulse-records", "pulse-av-show": "pulse-av-show", "tepe": "tepe",
+  "membranes_exhibition": "purple-membranes", "chiquita-brand": "chiquita", "chopstix": "chopstix", "2-2": "eeproperty",
+  "ddc-coaching": "ddc-coaching", "motion": "motion", "graphic-and-typographic-posters": "various-posters",
+  "graphic-and-typographic-posters-copy": "various-posters", "info": "about", "portfolio": "about"
+};
+const slug = location.pathname.split("/").filter(Boolean)[0] || "";
+location.replace("/" + (OLD[slug] ? "#" + OLD[slug] : ""));
+</script>
+</head><body style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:18px 16px">
+<a href="/" style="color:#111">Matěj Moravec</a>
+</body></html>
