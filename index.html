@@ -65,7 +65,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font); font-
 
 header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; padding-block: 18px 10px; }
 nav { display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap; }
-nav .name { font: inherit; font-weight: 700; margin-right: auto; letter-spacing: -.01em; background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer; }
+nav .name { font: inherit; font-weight: 400; margin-right: auto; letter-spacing: -.01em; background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer; }
 nav button, nav a { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
 nav button[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; }
 button:focus-visible, a:focus-visible, .tile:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
@@ -350,7 +350,7 @@ function openFromHash() {
 function openProject(p) {
   const tint = current ? css(tagById(current).c) : css("--bg");
   const chips = p.tags.map(id => `<button data-tag="${id}" aria-label="Show all ${tagById(id).label}" style="background:${current ? "rgba(255,255,255,.65)" : css(tagById(id).c)}">${tagById(id).label}</button>`).join("");
-  showSheet(`<div class="bar"><strong>Matěj Moravec</strong><button class="close">Close ×</button></div>
+  showSheet(`<div class="bar"><span>Matěj Moravec</span><button class="close">Close ×</button></div>
     <h2>${esc(p.title)}</h2><div class="meta"><span style="background:transparent;padding-left:0">${esc(p.years)}</span>${chips}</div>
     ${p.text ? `<p class="lede">${esc(p.text)}</p>` : ""}${(p.more || []).map(t => `<p class="lede">${esc(t)}</p>`).join("")}${p.link ? `<p class="lede"><a href="${esc(p.link[0])}" target="_blank" rel="noopener" style="color:inherit">${esc(p.link[1])}</a></p>` : ""}<div class="shots"></div>
     <a class="link" href="#${p.slug}">matejmoravec.com/#${esc(p.slug)}</a>`, tint);
