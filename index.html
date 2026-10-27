@@ -193,10 +193,7 @@ const PROJECTS = [
  {"slug":"chopstix","title":"Chopstix","years":"Lausanne","tags":["brand","anim","posters","print"],"text":"New logo for a family-run Vietnamese bistro in Lausanne known for the best banh mi in town, with a hand-painted sign, animated screen menus and printed menus that keep the place's warm feel.","cover":["2023/10/Chopstix-Logo-Black.jpg",842,596],"shots":["2023/10/ACKO_preview@0.33x.png","2023/10/food.jpg","2023/10/Drinks_3.mp4","2023/10/Bo-Bun_1.mp4","2023/10/Baguettes_1.mp4","2026/07/2023-08-02-18-24-36.webp","2026/07/2023-08-02-18-17-26.webp","2026/07/2023-08-02-18-16-57.webp"]},
  {"slug":"eeproperty","title":"eeproperty website","years":"Lutry & Zurich","tags":["web"],"text":"Website for a Swiss PropTech company that brings laundry systems, EV charging, solar energy management and accounting for shared buildings into one product.","cover":["2026/07/eeweb_cover.gif",1200,800],"shots":["2026/07/Screenshot-2026-07-30-at-15.34.28.webp","2026/07/Screenshot-2026-07-30-at-15.41.21.webp","2026/07/a-propos.webp","2026/07/home.webp","2026/07/Nous-Contacter.webp"]},
  {"slug":"ddc-coaching","title":"DDC Coaching","years":"Vevey","tags":["web","anim"],"text":"Design, animation and WordPress build for a career coaching team in Vevey, drawing on a triangle poster from the portfolio.","cover":["2024/05/Artboard-12.webp",1228,820],"shots":["2026/07/Screenshot-2026-07-29-at-15.13.25.webp","2026/07/Screenshot-2026-07-29-at-15.13.16.webp","2025/02/DDC-WEB.mp4"]},
- {"slug":"motion-02","title":"Motion 02","years":"Motion design","tags":["anim"],"text":"","cover":["2025/02/LASER-NS.mp4",1080,1080],"shots":[]},
- {"slug":"motion-03","title":"Motion 03","years":"Motion design","tags":["anim"],"text":"","cover":["2025/02/Light-Boxes-1.mp4",594,1056],"shots":[]},
- {"slug":"motion-05","title":"Motion 05","years":"Motion design","tags":["anim"],"text":"","cover":["2025/02/Rave-Lasers-1.mp4",594,1042],"shots":[]},
- {"slug":"motion-06","title":"Motion 06","years":"Motion design","tags":["anim"],"text":"","cover":["2025/02/Rave-Color-Drops-2.mp4",594,1056],"shots":[]},
+ {"slug":"touchdesigner-explorations","title":"Motion Design Explorations in TouchDesigner","years":"TouchDesigner","tags":["anim"],"text":"Abstract motion studies made in TouchDesigner, playing with lasers, light boxes and drops of colour.","cover":["2025/02/LASER-NS.mp4",1080,1080],"shots":[{"row":["2025/02/Light-Boxes-1.mp4","2025/02/Rave-Color-Drops-2.mp4","2025/02/Rave-Lasers-1.mp4"]}]},
  {"slug":"motion-10","title":"Universe of W–E","years":"W–E studio","tags":["anim"],"link":["https://www.w-e.studio/","w-e.studio"],"text":"Animation for the graphic design studio W–E, made from their own photos. It works as a universe of their things and an overview of all their work before the studio merged with another agency.","cover":["2025/02/W-—-E-Animatik-Black.mp4",1280,720],"shots":[]},
  {"slug":"motion-11","title":"Motion Design Showreel 2024","years":"2017–2024","tags":["anim"],"text":"A showreel of my motion design work from 2017 to 2024.","cover":["2023/03/Comp-4.mp4",1280,720],"shots":[]},
  {"slug":"motion-13","title":"Motion 13","years":"Motion design","tags":["anim"],"text":"","cover":["2025/11/Owelle-Anim-ZOO-RDX-Club-midloop.webm",1080,1920],"shots":[]},
@@ -357,6 +354,7 @@ function openProject(p) {
   }
   while (i < files.length) {
     if (special(files[i]) && files[i].small) { addSmall(files[i].small); i++; continue; }
+    if (special(files[i]) && files[i].row) { addRow(files[i].row); i++; continue; }
     if (special(files[i]) && files[i].text) { const t = document.createElement("p"); t.className = "lede"; t.textContent = files[i].text; shots.appendChild(t); i++; continue; }
     let n = sizes[r++ % sizes.length];
     const next = files.slice(i, i + n).findIndex(special);
