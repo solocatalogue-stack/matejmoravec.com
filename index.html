@@ -73,13 +73,13 @@ button:focus-visible, a:focus-visible, .tile:focus-visible { outline: 2px solid 
 
 #cloud { position: absolute; left: 50%; top: 100%; width: 400px; max-width: 88vw; height: 220px; transform: translateX(-38%); pointer-events: none; opacity: 0; transition: opacity .25s ease; }
 #worksWrap.open #cloud { opacity: 1; pointer-events: auto; }
-.bubble { position: absolute; font: inherit; font-size: 14px; color: var(--ink); border: 0; cursor: pointer; padding: 9px 16px; border-radius: 999px; white-space: nowrap; transform: scale(.4); opacity: 0; transition: transform .45s cubic-bezier(.2,1.4,.4,1), opacity .3s ease, filter .2s; box-shadow: 0 1px 0 rgba(0,0,0,.04); }
+.bubble { position: absolute; font: inherit; font-size: 14px; color: var(--ink); border: 0; cursor: pointer; padding: 9px 16px; border-radius: 999px; white-space: nowrap; transform: scale(.4); opacity: 0; transition: transform .45s cubic-bezier(.2,1.4,.4,1), scale .35s cubic-bezier(.2,1.4,.4,1), opacity .3s ease, filter .2s; animation: float 5s ease-in-out infinite; box-shadow: 0 1px 0 rgba(0,0,0,.04); }
 #worksWrap.open .bubble { transform: scale(1); opacity: 1; }
-.bubble span { display: inline-block; animation: float 5s ease-in-out infinite; }
-.bubble:hover { filter: brightness(.96); }
+.bubble:hover { scale: 1.2; filter: brightness(.96); z-index: 1; }
 .bubble.on { outline: 1.5px solid var(--ink); }
 .bubble small { font-size: 11px; color: rgba(0,0,0,.45); margin-left: 4px; }
-@keyframes float { 0%,100% { transform: translate(0,0) } 33% { transform: translate(2px,-4px) } 66% { transform: translate(-3px,2px) } }
+/* the whole bubble drifts; translate and scale are separate from the open/close transform */
+@keyframes float { 0%,100% { translate: 0 0 } 33% { translate: 2px -4px } 66% { translate: -3px 2px } }
 
 #active { position: relative; z-index: 15; min-height: 34px; }
 .chip { font: inherit; font-size: 14px; border: 0; border-radius: 999px; padding: 7px 14px; cursor: pointer; background: rgba(255,255,255,.7); color: var(--ink); }
@@ -146,7 +146,7 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
   .shots .masonry .img { margin-bottom: 16px; }
   .tile { margin-bottom: 16px; }
 }
-@media (prefers-reduced-motion: reduce) { .bubble span { animation: none; } * { transition-duration: .01s !important; } }
+@media (prefers-reduced-motion: reduce) { .bubble { animation: none; } * { transition-duration: .01s !important; } }
 </style>
 
 <div id="wash"></div>
@@ -239,7 +239,8 @@ TAGS.forEach((t, i) => {
   b.className = "bubble"; b.setAttribute("role", "menuitem"); b.dataset.id = t.id;
   b.style.background = css(t.c); b.style.left = t.x + "px"; b.style.top = t.y + "px";
   b.style.transitionDelay = (i * 35) + "ms";
-  b.innerHTML = `<span style="animation-delay:${-i * 0.7}s;animation-duration:${4 + (i % 3)}s">${t.label}<small>${n}</small></span>`;
+  b.style.animationDelay = (-i * 0.7) + "s"; b.style.animationDuration = (4 + (i % 3)) + "s";
+  b.innerHTML = `${t.label}<small>${n}</small>`;
   b.addEventListener("click", e => { e.stopPropagation(); choose(t, b); });
   cloud.appendChild(b);
 });
