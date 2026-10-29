@@ -21,7 +21,7 @@
   "@type": "Person",
   "name": "Matěj Moravec",
   "url": "https://matejmoravec.com/",
-  "image": "https://matejmoravec.com/assets/og.jpg",
+  "image": "https://matejmoravec.com/assets/about/matej-moravec.jpg",
   "jobTitle": ["Art Director", "Audiovisual Designer", "Artist"],
   "knowsAbout": ["Art direction", "Brand identity", "Typography", "Type design", "Poster design", "Motion design", "Audiovisual design"],
   "address": { "@type": "PostalAddress", "addressLocality": "Lausanne", "addressCountry": "CH" },
@@ -126,6 +126,7 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
 .shots .masonry img, .shots .masonry video { height: auto; object-fit: contain; }
 .sheet .link { display: inline-block; margin-top: 36px; color: var(--ink); font-size: 14px; }
 .info p { max-width: 58ch; font-size: 17px; line-height: 1.45; margin: 22px 0 0; }
+.info .portrait { display: block; width: min(100%, 420px); height: auto; margin-top: 36px; border-radius: 3px; background: var(--soft); }
 .info dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin-top: 36px; font-size: 15px; }
 .info dt { color: var(--muted); }
 .info dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
@@ -416,6 +417,7 @@ function openInfo(which) {
   document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
   $(which === "about" ? "#aboutBtn" : "#contactBtn").setAttribute("aria-pressed", "true");
   const about = `<h2>Art director and visual designer, born in Prague, based in Lausanne.</h2>
+    <img class="portrait" src="/assets/about/matej-moravec.jpg" alt="Matěj Moravec with three kittens" width="1200" height="1200">
     <p>I work across typography, motion and audiovisual media. I first earned an associate degree in graphic design and printed media at the Graphic School in Prague. I then studied type design, typography and visual communication at the Academy of Arts, Architecture and Design in Prague (UMPRUM), including a year at the Willem de Kooning Academy in Rotterdam.</p>
     <p>I've worked on commercial, cultural and independent projects, from global brand work for Chiquita to collaborations with Balmer Hählen in Lausanne and Marvil in Prague. I co-founded the label Pulse Records and make music as Nathan Solo (not Han Solo), a name that came from asking a friend what to call my solo project.</p>`;
   const cv = `<h3>Experience</h3><dl>
