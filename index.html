@@ -69,6 +69,7 @@ nav .name { font: inherit; font-weight: 400; margin-right: auto; letter-spacing:
 nav button, nav a { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
 nav button[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; }
 button:focus-visible, a:focus-visible, .tile:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.sheet .close.quiet:focus-visible { outline: none; }
 #worksWrap { position: relative; }
 
 #cloud { position: absolute; left: 50%; top: 100%; width: 400px; max-width: 88vw; height: 220px; transform: translateX(-38%); pointer-events: none; opacity: 0; transition: opacity .25s ease; }
@@ -327,7 +328,12 @@ function showSheet(html, bg) {
   document.body.style.overflow = "hidden";
   requestAnimationFrame(() => sheet.classList.add("show"));
   sheet.querySelector(".close").addEventListener("click", closeSheet);
-  sheet.querySelector(".close").focus();
+  // focus moves to Close so keyboard users land in the sheet; the ring only shows once they press a key
+  const close = sheet.querySelector(".close");
+  close.classList.add("quiet");
+  close.addEventListener("keydown", () => close.classList.remove("quiet"), { once: true });
+  close.addEventListener("blur", () => close.classList.remove("quiet"), { once: true });
+  close.focus({ preventScroll: true });
 }
 function closeSheet() {
   if (sheet.hidden) return;
