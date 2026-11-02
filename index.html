@@ -192,7 +192,7 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
 // Files copied from the old WordPress site, kept at the same paths
 const U = "wp-content/uploads/";
 const TAGS = [
-  { id: "posters", label: "Posters", c: "--c-posters", x: 4, y: 18 },
+  { id: "posters", label: "Posters", c: "--c-posters", x: 4, y: 18, open: "various-posters" },
   { id: "web", label: "Webdesign", c: "--c-web", x: 118, y: 4 },
   { id: "anim", label: "Animations", c: "--c-anim", x: 30, y: 74 },
   { id: "exhib", label: "Exhibitions", c: "--c-exhib", x: 160, y: 60 },
@@ -260,8 +260,9 @@ TAGS.forEach((t, i) => {
   b.style.background = css(t.c); b.style.left = t.x + "px"; b.style.top = t.y + "px";
   b.style.transitionDelay = (i * 35) + "ms";
   b.style.animationDelay = (-i * 0.7) + "s"; b.style.animationDuration = (4 + (i % 3)) + "s";
-  b.innerHTML = `${t.label}<small>${n}</small>`;
-  b.addEventListener("click", e => { e.stopPropagation(); choose(t, b); });
+  // a bubble with open goes straight to that project instead of filtering
+  b.innerHTML = t.open ? t.label : `${t.label}<small>${n}</small>`;
+  b.addEventListener("click", e => { e.stopPropagation(); if (t.open) { closeMenu(); openProject(PROJECTS.find(p => p.slug === t.open)); } else choose(t, b); });
   cloud.appendChild(b);
 });
 
