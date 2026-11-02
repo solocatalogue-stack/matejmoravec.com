@@ -1,1 +1,1 @@
-Website matejmoravec.com run by Claude
+Website : matejmoravec.com
