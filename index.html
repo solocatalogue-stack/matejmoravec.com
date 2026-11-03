@@ -253,6 +253,11 @@ function pic(path, label, tint, inTile) {
   return box;
 }
 
+function countShots(p) {
+  const items = p.shots.flatMap(f => typeof f === "string" ? [f] : (f.row || f.small || []));
+  return items.length + (p.coverOnly ? 0 : 1);
+}
+
 TAGS.forEach((t, i) => {
   const n = PROJECTS.filter(p => p.tags.includes(t.id)).length;
   const b = document.createElement("button");
@@ -261,7 +266,9 @@ TAGS.forEach((t, i) => {
   b.style.transitionDelay = (i * 35) + "ms";
   b.style.animationDelay = (-i * 0.7) + "s"; b.style.animationDuration = (4 + (i % 3)) + "s";
   // a bubble with open goes straight to that project instead of filtering
-  b.innerHTML = t.open ? t.label : `${t.label}<small>${n}</small>`;
+  // for a bubble that opens one project, the count is that project's images and videos
+  const shown = t.open ? countShots(PROJECTS.find(p => p.slug === t.open)) : n;
+  b.innerHTML = `${t.label}<small>${shown}</small>`;
   b.addEventListener("click", e => { e.stopPropagation(); if (t.open) { closeMenu(); openProject(PROJECTS.find(p => p.slug === t.open)); } else choose(t, b); });
   cloud.appendChild(b);
 });
