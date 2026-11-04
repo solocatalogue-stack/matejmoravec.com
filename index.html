@@ -479,7 +479,7 @@ function openInfo(which) {
   document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
   $(which === "about" ? "#aboutBtn" : "#contactBtn").setAttribute("aria-pressed", "true");
   const about = `<h2>Art director and visual designer, born in Prague, based in Lausanne.</h2>
-    <img class="portrait" src="/assets/about/matej-moravec.jpg" alt="Matěj Moravec with three kittens" width="1200" height="1200">
+    <img class="portrait" src="/assets/about/matej-moravec.jpg" alt="Portrait of Matěj Moravec" width="1200" height="1500">
     <p>I work across typography, motion and audiovisual media. I first earned an associate degree in graphic design and printed media at the Graphic School in Prague. I then studied type design, typography and visual communication at the Academy of Arts, Architecture and Design in Prague (UMPRUM), including a year at the Willem de Kooning Academy in Rotterdam.</p>
     <p>I've worked on commercial, cultural and independent projects, from global brand work for Chiquita to collaborations with Balmer Hählen in Lausanne and Marvil in Prague. I co-founded the label Pulse Records and make music as Nathan Solo (not Han Solo), a name that came from asking a friend what to call my solo project.</p>`;
   const cv = `<h3>Experience</h3><dl>
