@@ -49,7 +49,7 @@ const paragraphs = p => [p.text, ...(p.more || []), ...p.shots.filter(f => f && 
 
 const EMAIL_JS = `<script>document.querySelectorAll(".mail").forEach(a => { const e = ["moc.cevaromjetam", "johA"].map(s => [...s].reverse().join("")).reverse().join(String.fromCharCode(64)).toLowerCase(); a.href = "mailto:" + e; a.textContent = e; });</script>`;
 
-const page = ({ path, title, description, image, body, jsonld, noindex }) => `<!doctype html>
+const page = ({ path, title, description, image, imageAlt = title, body, jsonld, noindex }) => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
@@ -64,7 +64,13 @@ const page = ({ path, title, description, image, body, jsonld, noindex }) => `<!
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${SITE}${path}">
 <meta property="og:image" content="${SITE}${image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(imageAlt)}">
+<meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${SITE}${image}">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="Summary for AI assistants">
 <script type="application/ld+json">
 ${JSON.stringify(jsonld, null, 2)}
 </script>
@@ -99,6 +105,10 @@ ${body}
 `;
 
 const author = { "@type": "Person", "@id": SITE + "/#person", name: "Matěj Moravec", url: SITE + "/" };
+const website = { "@type": "WebSite", "@id": SITE + "/#website", url: SITE + "/", name: "Matěj Moravec", inLanguage: "en", author: { "@id": SITE + "/#person" }, publisher: { "@id": SITE + "/#person" } };
+const firstYear = p => (String(p.years).match(/(19|20)\d\d/) || [])[0];
+// every project page links to the next ones in portfolio order, so crawlers reach all of them
+const related = p => { const i = pages.indexOf(p); return [1, 2, 3, 4].map(k => pages[(i + k) % pages.length]); };
 const crumbs = (...items) => ({ "@type": "BreadcrumbList", itemListElement: [{ name: "Matěj Moravec", item: SITE + "/" }, ...items].map((it, i) => ({ "@type": "ListItem", position: i + 1, ...it })) });
 
 // project pages
@@ -106,20 +116,23 @@ for (const p of pages) {
   const path = `/${p.slug}/`;
   const list = files(p);
   const stills = list.filter(f => !isVideo(f));
-  const image = media(stills[0] || "assets/og.jpg");
+  const image = `/assets/og/${p.slug}.jpg`;
   const tags = p.tags.map(tagLabel);
   const shots = list.map((f, i) => isVideo(f)
     ? `<video src="${media(f)}" controls muted loop playsinline preload="metadata" aria-label="${esc(p.title)}, video ${i + 1}"></video>`
-    : `<img src="${media(f)}" alt="${esc(p.title)} by Matěj Moravec, image ${i + 1}" loading="${i ? "lazy" : "eager"}">`).join("\n");
+    : `<img src="${media(f)}" alt="${esc(p.title)} by Matěj Moravec: ${esc(tags.join(", ").toLowerCase())}, ${i + 1} of ${list.length}" loading="${i ? "lazy" : "eager"}">`).join("\n");
   write(`${p.slug}/index.html`, page({
     path, image,
-    title: `${p.title} – Matěj Moravec`,
+    title: `${p.title} – ${tags[0]} by Matěj Moravec`,
+    imageAlt: `${p.title} by Matěj Moravec`,
     description: short(p.text),
     jsonld: { "@context": "https://schema.org", "@graph": [
       { "@type": "CreativeWork", "@id": SITE + path + "#work", name: p.title, url: SITE + path, description: paragraphs(p).join(" "),
-        creator: author, keywords: tags.join(", "), image: stills.slice(0, 6).map(f => SITE + media(f)),
+        creator: author, author: { "@id": SITE + "/#person" }, keywords: tags.join(", "), inLanguage: "en", isPartOf: { "@id": SITE + "/#website" },
+        ...(firstYear(p) ? { dateCreated: firstYear(p) } : {}), thumbnailUrl: SITE + image,
+        image: stills.slice(0, 6).map(f => SITE + encodeURI(media(f))),
         ...(p.link ? { sameAs: p.link[0] } : {}) },
-      crumbs({ name: p.title, item: SITE + path })
+      website, crumbs({ name: p.title, item: SITE + path })
     ] },
     body: `<h1>${esc(p.title)}</h1>
 <div class="meta">${esc(p.years)} · ${tags.map(esc).join(", ")}</div>
@@ -128,7 +141,11 @@ ${p.link ? `<p><a href="${esc(p.link[0])}" rel="noopener">${esc(p.link[1])}</a><
 <div class="shots">
 ${shots}
 </div>
-<p class="more"><a href="/#${p.slug}">Open in the portfolio</a> · <a href="/">All works</a></p>`
+<h2>More work</h2>
+<ul>
+${related(p).map(r => `<li><a href="/${r.slug}/">${esc(r.title)}</a> · ${esc(r.years)}</li>`).join("\n")}
+</ul>
+<p class="more"><a href="/#${p.slug}">Open in the portfolio</a> · <a href="/">All works</a> · <a href="/about/">About Matěj Moravec</a></p>`
   }));
 }
 
@@ -145,7 +162,7 @@ write("about/index.html", page({
   jsonld: { "@context": "https://schema.org", "@graph": [
     { "@type": "ProfilePage", "@id": SITE + "/about/", url: SITE + "/about/", name: "About Matěj Moravec", mainEntity: { "@id": SITE + "/#person" } },
     { ...PERSON, "@context": undefined, "@id": SITE + "/#person", description: bio },
-    crumbs({ name: "About", item: SITE + "/about/" })
+    website, crumbs({ name: "About", item: SITE + "/about/" })
   ] },
   body: `<h1>${strip(ABOUT.match(/<h2>([^]*?)<\/h2>/)[1])}</h1>
 ${ABOUT.replace(/<h2>[^]*?<\/h2>/, "").trim()}
@@ -192,6 +209,15 @@ const summary = `# Matěj Moravec
 
 ${bio}
 
+## Key facts
+- Name: Matěj Moravec (also written Matej Moravec); makes music as Nathan Solo
+- Based in: Lausanne, Switzerland; born in Prague, Czech Republic
+- Work: art director and senior graphic designer; ${(PERSON.knowsAbout || []).slice(0, 12).join(", ").toLowerCase()}
+- Current role: ${strip(CV.match(/<dd>([^]*?)<\/dd>/)[1])}
+- Languages: ${(PERSON.knowsLanguage || []).join(", ")}
+- Education: ${(PERSON.alumniOf || []).map(a => a.name).join("; ")}
+- Website: ${SITE}/ (portfolio), ${SITE}/about/ (CV and contact)
+
 ## Experience
 ${cvLines.slice(0, split).join("\n")}
 
@@ -218,6 +244,13 @@ ${paragraphs(p).join("\n\n")}${p.link ? `\n\n${p.link[1]}: ${p.link[0]}` : ""}`)
 // plain links in the homepage grid for crawlers and no-JS visitors; layout() replaces them on load
 const list = `<ul id="static-works">${PROJECTS.map(p => `<li>${p.text ? `<a href="/${p.slug}/">${esc(p.title)}</a>` : esc(p.title)} · ${esc(p.years)}</li>`).join("")}<li><a href="/about/">About and contact</a></li></ul>`;
 index = index.replace('<div id="grid"></div>', `<div id="grid">${list}</div>`);
+// homepage: the site and the list of works as structured data, next to the Person block
+const home = { "@context": "https://schema.org", "@graph": [
+  website,
+  { "@type": "CollectionPage", "@id": SITE + "/#works", url: SITE + "/", name: "Works by Matěj Moravec", isPartOf: { "@id": SITE + "/#website" }, about: { "@id": SITE + "/#person" },
+    mainEntity: { "@type": "ItemList", itemListElement: pages.map((p, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE}/${p.slug}/`, name: p.title })) } }
+] };
+index = index.replace("</head>", `<script type="application/ld+json">\n${JSON.stringify(home)}\n</script>\n</head>`);
 write("index.html", index);
 
 console.log(`${pages.length} project pages, about page, ${Object.keys(OLD).length} old addresses checked, sitemap, llms.txt`);

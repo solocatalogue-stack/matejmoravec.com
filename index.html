@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Matěj Moravec – Art Director, Audiovisual Designer and Artist</title>
-<meta name="description" content="Matěj Moravec is an art director, audiovisual designer and artist based in Lausanne, working across brand identity, typography, posters, motion design and audio-reactive visuals.">
+<title>Matěj Moravec – Art Director and Graphic Designer in Lausanne</title>
+<meta name="description" content="Matěj Moravec is an art director and senior graphic designer in Lausanne, Switzerland. Brand identity, campaigns, websites, content, posters, typography and motion design.">
 <meta name="author" content="Matěj Moravec">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="Summary for AI assistants">
@@ -10,12 +10,15 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Matěj Moravec">
-<meta property="og:title" content="Matěj Moravec – Art Director, Audiovisual Designer and Artist">
-<meta property="og:description" content="Art director, audiovisual designer and artist based in Lausanne. Brand identity, typography, posters, motion design and audio-reactive visuals.">
+<meta property="og:title" content="Matěj Moravec – Art Director and Graphic Designer in Lausanne">
+<meta property="og:description" content="Art director and senior graphic designer in Lausanne. Brand identity, campaigns, websites, content, posters, typography and motion design.">
 <meta property="og:url" content="https://matejmoravec.com/">
 <meta property="og:image" content="https://matejmoravec.com/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Work by Matěj Moravec">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:image" content="https://matejmoravec.com/assets/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
@@ -27,8 +30,8 @@
   "description": "Art director and visual designer born in Prague and based in Lausanne, Switzerland, working across brand identity, typography, type design, posters, motion design and audio-reactive visuals.",
   "url": "https://matejmoravec.com/",
   "image": "https://matejmoravec.com/assets/about/matej-moravec.jpg",
-  "jobTitle": ["Art Director", "Audiovisual Designer", "Artist"],
-  "knowsAbout": ["Art direction", "Brand identity", "Typography", "Type design", "Poster design", "Motion design", "Audiovisual design"],
+  "jobTitle": ["Art Director", "Senior Graphic Designer", "Audiovisual Designer"],
+  "knowsAbout": ["Art direction", "Graphic design", "Brand identity", "Visual communication", "Campaign design", "Content creation", "Web design", "Editorial design", "Typography", "Type design", "Poster design", "Motion design", "Animation", "Audiovisual design", "TouchDesigner", "Figma", "Adobe After Effects", "Design project management", "AI agents in design work"],
   "address": { "@type": "PostalAddress", "addressLocality": "Lausanne", "addressCountry": "CH" },
   "birthPlace": { "@type": "Place", "name": "Prague" },
   "alumniOf": [
@@ -37,6 +40,7 @@
     { "@type": "EducationalOrganization", "name": "Graphic School in Prague" }
   ],
   "worksFor": { "@type": "Organization", "name": "eeproperty" },
+  "homeLocation": { "@type": "Place", "name": "Lausanne, Switzerland" },
   "knowsLanguage": ["Czech", "English", "French"],
   "award": [
     "Antwerp Poster Festival, finalist (2020)",
@@ -178,7 +182,7 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
 <div id="wash"></div>
 <div id="grow"></div>
 
-<h1 class="vh">Matěj Moravec – art director, audiovisual designer and artist</h1>
+<h1 class="vh">Matěj Moravec – art director and graphic designer in Lausanne</h1>
 <header class="gut">
   <nav>
     <button class="name" id="home">Matěj Moravec</button>
@@ -245,6 +249,8 @@ const cloud = $("#cloud"), wrap = $("#worksWrap"), worksBtn = $("#works");
 const wash = $("#wash"), grow = $("#grow"), grid = $("#grid"), active = $("#active"), sheet = $("#sheet");
 let current = null, closeT;
 
+// grid tiles play a small, short, silent copy of a cover video; the full file plays in the project
+const PREVIEWS = ["oliver-torr-tour", "touchdesigner-explorations", "motion-13", "motion-10", "motion-11", "skeng"];
 // image or muted looping video, with a soft placeholder if the file can't load
 const src = path => path.startsWith("assets/") ? path : U + path;
 const seen = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause()));
@@ -306,7 +312,8 @@ PROJECTS.forEach(p => {
   const t = document.createElement("button");
   t.className = "tile"; t.dataset.slug = p.slug;
   const slides = p.carousel ? carouselImages(p) : null;
-  const box = pic(slides ? slides[0] : p.cover[0], p.title, css(tagById(p.tags[0]).c), true);
+  const video = !slides && /\.(mp4|webm)$/i.test(p.cover[0]);
+  const box = pic(slides ? slides[0] : video && PREVIEWS.includes(p.slug) ? `assets/previews/${p.slug}.mp4` : p.cover[0], p.title, css(tagById(p.tags[0]).c), true);
   if (slides) startCarousel(box, slides, p.carousel);
   box.style.aspectRatio = `${p.cover[1]} / ${p.cover[2]}`;
   // inset: the cover sits smaller inside the grey box, with this share of the tile width as margin
@@ -492,7 +499,7 @@ function openInfo(which) {
     <p>I work across typography, motion and audiovisual media. I first earned an associate degree in graphic design and printed media at the Graphic School in Prague. I then studied type design, typography and visual communication at the Academy of Arts, Architecture and Design in Prague (UMPRUM), including a year at the Willem de Kooning Academy in Rotterdam.</p>
     <p>I've worked on commercial, cultural and independent projects, from global brand work for Chiquita to collaborations with Balmer Hählen in Lausanne and Marvil in Prague. I co-founded the label Pulse Records and make music as Nathan Solo (not Han Solo), a name that came from asking a friend what to call my solo project.</p>`;
   const cv = `<h3>Experience</h3><dl>
-    <dt>2025–now</dt><dd>Senior Visual Design Lead, eeproperty, Lutry</dd>
+    <dt>2025–now</dt><dd>Senior Lead Designer, eeproperty, Lutry</dd>
     <dt>2012–now</dt><dd>Independent graphic and motion design practice</dd>
     <dt>2017–2022</dt><dd>Lead Graphic Designer (Global), Chiquita, Etoy</dd>
     <dt>2016–2017</dt><dd>Art Director, ACSTUDIO.CH, Lausanne</dd>

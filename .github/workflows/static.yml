@@ -43,3 +43,9 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+      - name: Tell Bing and other IndexNow engines about the pages
+        continue-on-error: true
+        run: |
+          URLS=$(grep -o '<loc>[^<]*</loc>' sitemap.xml | sed -e 's#<loc>#"#' -e 's#</loc>#"#' | paste -sd, -)
+          printf '{"host":"matejmoravec.com","key":"f0748256df4fc28c6b1fefdab783a6db","keyLocation":"https://matejmoravec.com/f0748256df4fc28c6b1fefdab783a6db.txt","urlList":[%s]}' "$URLS" > indexnow.json
+          curl -sS -X POST https://api.indexnow.org/indexnow -H 'Content-Type: application/json; charset=utf-8' --data @indexnow.json -w '%{http_code}\n'

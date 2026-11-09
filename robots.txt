@@ -1,4 +1,22 @@
+# Search engines and AI assistants are welcome to read and cite this portfolio.
 User-agent: *
+Allow: /
+
+# named explicitly so their owners see the intent; all are already allowed above
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: CCBot
 Allow: /
 
 Sitemap: https://matejmoravec.com/sitemap.xml
