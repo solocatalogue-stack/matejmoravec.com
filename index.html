@@ -109,12 +109,13 @@ button:focus-visible, a:focus-visible, .tile:focus-visible { outline: 2px solid 
 
 main { position: relative; z-index: 5; padding-block: 18px 80px; }
 #foot { position: relative; z-index: 5; display: flex; justify-content: center; padding-block: 8px 110px; }
-.hello { display: inline-block; font-size: 24pt; line-height: 1; letter-spacing: -.01em; color: var(--ink); text-decoration: none; padding: .7em 1.4em; border: 1.5px solid var(--ink); border-radius: 22px; background: var(--bg);
-  transition: background .3s ease, color .3s ease, transform .35s cubic-bezier(.3,1.6,.5,1), border-radius .35s ease; }
-.hello:hover, .hello:focus-visible { background: var(--ink); color: var(--bg); transform: translateY(-4px) rotate(-2deg) scale(1.04); border-radius: 34px; outline: none; }
-.hello:active { transform: scale(.96); transition-duration: .1s; }
+/* a physical key: thin outline, a hard shadow underneath for its thickness; pressing pushes it down onto that shadow */
+.hello { --depth: 7px; display: inline-block; font-size: 24pt; line-height: 1; letter-spacing: -.01em; color: var(--ink); text-decoration: none; padding: .7em 1.4em; border: 1.5px solid var(--ink); border-radius: 22px; background: var(--bg);
+  box-shadow: 0 var(--depth) 0 0 var(--ink); margin-bottom: var(--depth); transition: transform .18s ease, box-shadow .18s ease; -webkit-tap-highlight-color: transparent; }
+.hello:hover, .hello:focus-visible { transform: translateY(-2px); box-shadow: 0 calc(var(--depth) + 2px) 0 0 var(--ink); outline: none; }
+.hello:active, .hello.pressed { transform: translateY(var(--depth)); box-shadow: 0 0 0 0 var(--ink); transition-duration: .06s; }
 #confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1000; }
-@media (prefers-reduced-motion: reduce) { .hello, .hello:hover { transition: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .hello { transition: none; } }
 
 #grid { display: flex; gap: 18px; align-items: flex-start; }
 #grid .col { flex: 1 1 0; min-width: 0; }
@@ -555,7 +556,7 @@ openFromHash();
 const hello = $("#hello");
 hello.href = "mailto:" + EMAIL;
 hello.title = EMAIL;
-hello.addEventListener("click", e => confetti(e.clientX, e.clientY));
+hello.addEventListener("click", e => { confetti(e.clientX, e.clientY); hello.classList.add("pressed"); setTimeout(() => hello.classList.remove("pressed"), 160); });
 let confettiRun = 0;
 function confetti(x, y) {
   const run = ++confettiRun;
