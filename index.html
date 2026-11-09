@@ -146,7 +146,9 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
 .shots img, .shots video { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shots .small { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; max-width: 900px; margin: 0 auto; width: 100%; }
 .shots .img.plain { background: none; }
-.shots .img.plain img { box-sizing: border-box; padding: 12%; object-fit: contain; }
+/* inset, not padding: padding % follows the width only, which crushes very wide pictures */
+.shots .img.plain img { position: absolute; left: 12%; top: 12%; width: 76%; height: 76%; object-fit: contain; }
+.shots .img.plain.wide img { left: 0; top: 4%; width: 100%; height: 92%; } /* long strips: use the full width */
 .shots .row.solo .img.plain { width: min(100%, calc(60vh * var(--ar, 1.5))); }
 .shots .small .img { background: none; aspect-ratio: auto; }
 .shots .lede { margin: 22px 0 4px; }
@@ -467,7 +469,7 @@ function openProject(p) {
       const box = pic(s, p.title, "rgba(0,0,0,.06)");
       if ((p.plain || []).includes(s)) box.classList.add("plain");
       const m = box.firstChild;
-      const fit = (w, h) => { if (w && h) box.style.setProperty("--ar", (w / h).toFixed(4)); };
+      const fit = (w, h) => { if (w && h) { box.style.setProperty("--ar", (w / h).toFixed(4)); box.classList.toggle("wide", w / h > 3); } };
       if (s === p.cover[0]) fit(p.cover[1], p.cover[2]);
       m.addEventListener("load", () => fit(m.naturalWidth, m.naturalHeight));
       m.addEventListener("loadedmetadata", () => fit(m.videoWidth, m.videoHeight));
