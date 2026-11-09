@@ -108,6 +108,14 @@ button:focus-visible, a:focus-visible, .tile:focus-visible { outline: 2px solid 
 .chip::after { content: " ×"; color: var(--muted); }
 
 main { position: relative; z-index: 5; padding-block: 18px 80px; }
+#foot { position: relative; z-index: 5; display: flex; justify-content: center; padding-block: 8px 110px; }
+.hello { display: inline-block; font-size: 24pt; line-height: 1; letter-spacing: -.01em; color: var(--ink); text-decoration: none; padding: .7em 1.4em; border: 1.5px solid var(--ink); border-radius: 22px; background: var(--bg);
+  transition: background .3s ease, color .3s ease, transform .35s cubic-bezier(.3,1.6,.5,1), border-radius .35s ease; }
+.hello:hover, .hello:focus-visible { background: var(--ink); color: var(--bg); transform: translateY(-4px) rotate(-2deg) scale(1.04); border-radius: 34px; outline: none; }
+.hello:active { transform: scale(.96); transition-duration: .1s; }
+#confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1000; }
+@media (prefers-reduced-motion: reduce) { .hello, .hello:hover { transition: none; transform: none; } }
+
 #grid { display: flex; gap: 18px; align-items: flex-start; }
 #grid .col { flex: 1 1 0; min-width: 0; }
 .tile { display: block; width: 100%; break-inside: avoid; margin: 0 0 22px; padding: 0; border: 0; background: none; text-align: left; font: inherit; color: var(--ink); cursor: pointer; transition: opacity .45s ease, transform .45s ease; }
@@ -198,7 +206,9 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
 </header>
 
 <div id="active" class="gut"></div>
-<main class="gut"><div id="grid"><ul id="static-works"><li><a href="/various-posters/">Various Posters</a> · 2020–2025</li><li><a href="/shareman/">Shareman</a> · 2025–now</li><li><a href="/purple-membranes/">Pavel Příkaský: Purple Membranes</a> · 2023 · GKK Klenová</li><li><a href="/pulse-records/">Pulse Records</a> · 2023–now</li><li><a href="/chiquita/">Chiquita</a> · 2017–2022</li><li><a href="/pulse-av-show/">Pulse AV Show</a> · La Gravière, Geneva</li><li><a href="/eeproperty/">eeproperty website</a> · Lutry &amp; Zurich</li><li><a href="/oliver-torr-tour/">Oliver Torr European tour</a> · Oliver Torr</li><li><a href="/goethe-institut/">Goethe-Institut light typeface</a> · With Marek Šilpoch</li><li><a href="/tepe/">T.E.P.E.</a> · Oliver Torr · SHAPE Platform</li><li><a href="/chopstix/">Chopstix</a> · Lausanne</li><li><a href="/ddc-coaching/">DDC Coaching</a> · Vevey</li><li><a href="/touchdesigner-explorations/">Motion Design Explorations in TouchDesigner</a> · TouchDesigner</li><li>Motion 13 · Motion design</li><li><a href="/perspektiv/">Perspektiv</a> · Architecture studio</li><li><a href="/hans-wilsdorf/">Hans Wilsdorf Newspapers</a> · Lilia Petrov</li><li><a href="/skeng/">Skeng and other typefaces</a> · Type design</li><li><a href="/cassettes/">Cassette tapes</a> · Music releases</li><li><a href="/nathan-solo/">Nathan Solo</a> · Music alter ego</li><li><a href="/gkk-exhibition/">Sice moc nereaguju, ale vše sleduju</a> · 2024 · Group exhibition · GKK Klenová</li><li><a href="/motion-10/">Universe of W–E</a> · W–E studio</li><li><a href="/motion-11/">Motion Design Showreel 2024</a> · 2017–2024</li><li><a href="/website/">matejmoravec.com</a> · 2026 · Built with AI, hosted on GitHub</li><li><a href="/about/">About and contact</a></li></ul></div></main>
+<main class="gut"><div id="grid"></div></main>
+<footer class="gut" id="foot"><a id="hello" class="hello" href="#contact">Contact me</a></footer>
+<canvas id="confetti" aria-hidden="true"></canvas>
 <div id="sheet" class="sheet gut" hidden role="dialog" aria-modal="true"></div>
 
 <script>
@@ -540,5 +550,44 @@ $("#contactBtn").addEventListener("click", () => openInfo("contact"));
 $("#home").addEventListener("click", () => { closeSheet(); reset(); });
 addEventListener("hashchange", openFromHash);
 openFromHash();
+
+// footer button: writes the email address in the browser, then throws confetti in the tag colours
+const hello = $("#hello");
+hello.href = "mailto:" + EMAIL;
+hello.title = EMAIL;
+hello.addEventListener("click", e => confetti(e.clientX, e.clientY));
+let confettiRun = 0;
+function confetti(x, y) {
+  const run = ++confettiRun;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = $("#confetti"), ctx = cv.getContext("2d"), dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.scale(dpr, dpr);
+  // the tag colours, saturated so they read against white
+  const colours = ["#f2c230", "#4d7fe0", "#f2764a", "#3fae68", "#9b62d9", "#ec5f95", "#2fb3b3", "#97bf2f", "#111111"];
+  const bits = Array.from({ length: 220 }, (_, i) => {
+    const a = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.3, v = 7 + Math.random() * 13;
+    // half burst from the button, half rain from the top so it covers the whole page
+    const fromTop = i % 2;
+    return { x: fromTop ? Math.random() * innerWidth : x, y: fromTop ? -20 - Math.random() * innerHeight * .5 : y,
+      vx: fromTop ? (Math.random() - .5) * 3 : Math.cos(a) * v, vy: fromTop ? Math.random() * 3 : Math.sin(a) * v,
+      w: 8 + Math.random() * 9, h: 5 + Math.random() * 7, r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+      c: colours[i % colours.length], round: Math.random() < .3 };
+  });
+  const start = performance.now();
+  (function frame(t) {
+    if (run !== confettiRun) return;
+    const age = (t - start) / 1000;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.globalAlpha = Math.max(0, Math.min(1, 4.2 - age));
+    for (const b of bits) {
+      b.vy += .28; b.vx *= .985; b.vy *= .985; b.x += b.vx; b.y += b.vy; b.r += b.vr;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r); ctx.scale(1, Math.cos(b.r * 2));
+      ctx.fillStyle = b.c;
+      if (b.round) { ctx.beginPath(); ctx.arc(0, 0, b.h / 1.4, 0, 7); ctx.fill(); } else ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h);
+      ctx.restore();
+    }
+    if (age < 4.2) requestAnimationFrame(frame); else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  })(start);
+}
 </script>
 </body></html>

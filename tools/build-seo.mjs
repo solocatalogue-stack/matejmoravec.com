@@ -243,7 +243,7 @@ ${paragraphs(p).join("\n\n")}${p.link ? `\n\n${p.link[1]}: ${p.link[0]}` : ""}`)
 
 // plain links in the homepage grid for crawlers and no-JS visitors; layout() replaces them on load
 const list = `<ul id="static-works">${PROJECTS.map(p => `<li>${p.text ? `<a href="/${p.slug}/">${esc(p.title)}</a>` : esc(p.title)} · ${esc(p.years)}</li>`).join("")}<li><a href="/about/">About and contact</a></li></ul>`;
-index = index.replace('<div id="grid"></div>', `<div id="grid">${list}</div>`);
+index = index.replace(/<div id="grid">[^]*?<\/div><\/main>/, `<div id="grid">${list}</div></main>`);
 // homepage: the site and the list of works as structured data, next to the Person block
 const home = { "@context": "https://schema.org", "@graph": [
   website,
