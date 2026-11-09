@@ -109,12 +109,13 @@ button:focus-visible, a:focus-visible, .tile:focus-visible { outline: 2px solid 
 
 main { position: relative; z-index: 5; padding-block: 18px 80px; }
 #foot { position: relative; z-index: 5; display: flex; justify-content: center; padding-block: 8px 110px; }
-.hello { display: inline-block; font-size: 24pt; line-height: 1; letter-spacing: -.01em; color: var(--ink); text-decoration: none; padding: .7em 1.4em; border: 1.5px solid var(--ink); border-radius: 22px; background: var(--bg);
-  transition: background .3s ease, color .3s ease, transform .35s cubic-bezier(.3,1.6,.5,1), border-radius .35s ease; }
-.hello:hover, .hello:focus-visible { background: var(--ink); color: var(--bg); transform: translateY(-4px) rotate(-2deg) scale(1.04); border-radius: 34px; outline: none; }
-.hello:active { transform: scale(.96); transition-duration: .1s; }
+/* a physical key: thin outline, a hard shadow underneath for its thickness; pressing pushes it down onto that shadow */
+.hello { --depth: 7px; display: inline-block; font-size: 24pt; line-height: 1; letter-spacing: -.01em; color: var(--ink); text-decoration: none; padding: .7em 1.4em; border: 1.5px solid var(--ink); border-radius: 22px; background: var(--bg);
+  box-shadow: 0 var(--depth) 0 0 var(--ink); margin-bottom: var(--depth); transition: transform .18s ease, box-shadow .18s ease; -webkit-tap-highlight-color: transparent; }
+.hello:hover, .hello:focus-visible { transform: translateY(-2px); box-shadow: 0 calc(var(--depth) + 2px) 0 0 var(--ink); outline: none; }
+.hello:active, .hello.pressed { transform: translateY(var(--depth)); box-shadow: 0 0 0 0 var(--ink); transition-duration: .06s; }
 #confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1000; }
-@media (prefers-reduced-motion: reduce) { .hello, .hello:hover { transition: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .hello { transition: none; } }
 
 #grid { display: flex; gap: 18px; align-items: flex-start; }
 #grid .col { flex: 1 1 0; min-width: 0; }
@@ -244,7 +245,7 @@ const PROJECTS = [
  {"slug":"motion-13","title":"Motion 13","years":"Motion design","tags":["anim"],"text":"","cover":["2025/11/Owelle-Anim-ZOO-RDX-Club-midloop.webm",1080,1920],"shots":[]},
  {"slug":"perspektiv","title":"Perspektiv","years":"Architecture studio","tags":["web"],"text":"Interactive presentation for the architecture studio Perspektiv, in German, Czech and English.","cover":["2022/06/ENG-Intro-Cover-3-min.png",1600,1000],"shots":["2022/06/DE-Intro-Cover-3-min.png","2022/06/CZE-Intro-Cover-3-min.png","2022/06/Index-min.png","2022/06/New-Work-min.png","2022/06/BASE4WORK-1-min.png","2022/06/FEG-1-min.png","2022/06/DSTRCT-1-min.png","2022/06/Umsetzung-2-min.png","2022/06/Contact-2-min.png"]},
  {"slug":"hans-wilsdorf","title":"Hans Wilsdorf Newspapers","years":"Lilia Petrov","tags":["print"],"text":"Newspapers presenting the projects of Lilia Petrov, an architect for interior and public spaces, as a printed overview of her work.","cover":["2021/07/A.jpg",1600,1037],"shots":["2021/07/E.jpg","2021/07/C.jpg","2021/07/G.jpg","2021/07/F.jpg","2021/07/D.jpg","2021/07/B.jpg","2021/07/H.jpg","2021/07/I.jpg","2021/07/J.jpg"]},
- {"slug":"skeng","title":"Skeng and other typefaces","years":"Type design","tags":["type","anim"],"text":"Skeng is a segmented mono variable typeface that reacts to sound amplitude. I use it as a tool to visualise songs from my own album. Its three axes respond to the sound independently: shape changes the segment shape, width changes the width of each character, and height changes the space between segments.","cover":["2021/07/aa-skeng.mp4",1428,1420],"shots":["2021/07/aa-skeng.mp4","2021/07/NS-4-skeng@2x.png","2021/07/NS-1-skeng@2x.png","2021/07/NS2-skeng@2x.png","2023/10/pisma@2x.png"],"more":["The last image shows other typefaces still under occasional development."],"coverOnly":true},
+ {"slug":"skeng","title":"Skeng and other typefaces","years":"Type design","tags":["type","anim"],"text":"Skeng is a segmented mono variable typeface that reacts to sound amplitude. I use it as a tool to visualise songs from my own album. Its three axes respond to the sound independently: shape changes the segment shape, width changes the width of each character, and height changes the space between segments.","cover":["2021/07/NS-3-skeng@2x.png",1600,234],"shots":["2021/07/aa-skeng.mp4","2021/07/NS-4-skeng@2x.png","2021/07/NS-1-skeng@2x.png","2021/07/NS2-skeng@2x.png","2023/10/pisma@2x.png"],"more":["The last image shows other typefaces still under occasional development."]},
  {"slug":"cassettes","title":"Cassette tapes","years":"Music releases","tags":["print"],"text":"Cassette tapes for various artists, music collectives and labels.","cover":["2023/10/PIU-HIWAY-casette_0000_Layer-4-min-1.png",1200,834],"shots":["2023/10/PIU-HIWAY-casette_0003_Layer-1-min.png","2023/10/PIU-HIWAY-casette_0002_Layer-2-min.png","2023/10/PIU-HIWAY-casette_0001_Layer-3-min.png","2023/10/casette-NS.jpg","2024/05/Pulse-2-Casette-Mockup.jpg","2024/05/PEP001-Entelechia_Hydrozoa-Casette-Mockup.webp"]},
  {"slug":"nathan-solo","title":"Nathan Solo","years":"Music alter ego","tags":["brand","print","web"],"text":"Visuals, merch, releases and the nathansolo.com website for Nathan Solo, the name I make music and play under.","cover":["assets/nathansolo/nathansolo-mac-home.jpg",2800,1900],"shots":["assets/nathansolo/nathansolo-homepage.jpg","assets/nathansolo/nathansolo-phones.jpg","assets/nathansolo/nathansolo-mac-sections.jpg","2023/10/Nathan-Solo-5-LORES.jpeg","2024/11/SHOP-WEB-Images.webp","2024/11/SHOP-WEB-Images_0000_Artboard-1-copy-2@2x.webp","2024/11/SHOP-WEB-Images_0004_CAP.webp","2024/11/6a884981-3fd0-4744-9cb9-602a8b7afb5e.webp","2023/10/casette-NS.jpg"]},
  {"slug":"gkk-exhibition","title":"Sice moc nereaguju, ale vše sleduju","years":"2024 · Group exhibition · GKK Klenová","tags":["exhib","posters","print"],"text":"Visual identity and exhibition design for West Point 2024, a group show curated by Petr Krátký at Galerie U Bílého jednorožce in Klatovy, part of Galerie Klatovy Klenová. The bilingual title, I don’t react much, but I watch everything, runs through the whole identity, from the banners on the facade and in the courtyard to the wall texts, the booklet, the invitation and the Instagram posts.","cover":["2026/08/1_DSCF6116.webp",2048,1365],"shots":["assets/gkk/gkk-facade.jpg","assets/gkk/gkk-courtyard.jpg","2024/05/Artboard-8.webp",{"row":["assets/gkk/gkk-story.jpg","assets/gkk/gkk-instagram.mp4"]},"assets/gkk/gkk-booklet.jpg","assets/gkk/gkk-invitation.jpg"],"more":["The show ran from 27 January to 31 March 2024 with works by Matěj Al-Ali, Tomáš Moravec, Michal Pustějovský, Roman Štětina and Viktor Takáč. The heavy white lettering sits on a blue sky, with the English title bending around it."]},
@@ -262,7 +263,7 @@ const wash = $("#wash"), grow = $("#grow"), grid = $("#grid"), active = $("#acti
 let current = null, closeT;
 
 // grid tiles play a small, short, silent copy of a cover video; the full file plays in the project
-const PREVIEWS = ["oliver-torr-tour", "touchdesigner-explorations", "motion-13", "motion-10", "motion-11", "skeng"];
+const PREVIEWS = ["oliver-torr-tour", "touchdesigner-explorations", "motion-13", "motion-10", "motion-11"];
 // image or muted looping video, with a soft placeholder if the file can't load
 const src = path => path.startsWith("assets/") ? path : U + path;
 const seen = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause()));
@@ -435,8 +436,11 @@ function openFromHash() {
 }
 
 function openProject(p) {
-  const tint = current ? css(tagById(current).c) : css("--bg");
-  const chips = p.tags.map(id => `<button data-tag="${id}" aria-label="Show all ${tagById(id).label}" style="background:${current ? "rgba(255,255,255,.65)" : css(tagById(id).c)}">${tagById(id).label}</button>`).join("");
+  // a project that owns a tag (Various Posters owns Posters) always wears that colour; others take the active filter's colour
+  const own = TAGS.find(t => t.open === p.slug);
+  const tinted = own || current;
+  const tint = own ? css(own.c) : current ? css(tagById(current).c) : css("--bg");
+  const chips = p.tags.map(id => `<button data-tag="${id}" aria-label="Show all ${tagById(id).label}" style="background:${tinted ? "rgba(255,255,255,.65)" : css(tagById(id).c)}">${tagById(id).label}</button>`).join("");
   showSheet(`<div class="bar"><span>Matěj Moravec</span><button class="close">Close ×</button></div>
     <h2>${esc(p.title)}</h2><div class="meta"><span style="background:transparent;padding-left:0">${esc(p.years)}</span>${chips}</div>
     ${p.text ? `<p class="lede">${esc(p.text)}</p>` : ""}${(p.more || []).map(t => `<p class="lede">${esc(t)}</p>`).join("")}${p.link ? `<p class="lede"><a href="${esc(p.link[0])}" target="_blank" rel="noopener" style="color:inherit">${esc(p.link[1])}</a></p>` : ""}<div class="shots"></div>
@@ -555,7 +559,7 @@ openFromHash();
 const hello = $("#hello");
 hello.href = "mailto:" + EMAIL;
 hello.title = EMAIL;
-hello.addEventListener("click", e => confetti(e.clientX, e.clientY));
+hello.addEventListener("click", e => { confetti(e.clientX, e.clientY); hello.classList.add("pressed"); setTimeout(() => hello.classList.remove("pressed"), 160); });
 let confettiRun = 0;
 function confetti(x, y) {
   const run = ++confettiRun;
