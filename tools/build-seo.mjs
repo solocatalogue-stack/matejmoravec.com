@@ -211,7 +211,7 @@ code { font-size: .92em; }`,
   jsonld: { "@context": "https://schema.org", "@graph": [
     { "@type": "SoftwareApplication", "@id": SITE + TYPO + "#app", name: "Česká typografie pro Affinity", url: SITE + TYPO, description: typoText,
       applicationCategory: "DesignApplication", keywords: "česká typografie, Affinity Publisher, TypoSkript pro Affinity, jednoznakové předložky, nedělitelné mezery, české uvozovky, skript", operatingSystem: "macOS, Windows", softwareVersion: "1.0", inLanguage: "cs",
-      downloadUrl: SITE + "/assets/ceska-typografie/CeskaTypografie.js", license: "https://www.gnu.org/licenses/gpl-3.0.html",
+      downloadUrl: SITE + "/assets/ceska-typografie/CeskaTypografie.js", codeRepository: "https://github.com/solocatalogue-stack/ceska-typografie-affinity", sameAs: "https://github.com/solocatalogue-stack/ceska-typografie-affinity", license: "https://www.gnu.org/licenses/gpl-3.0.html",
       offers: { "@type": "Offer", price: "0", priceCurrency: "CZK" }, author: { "@id": SITE + "/#person" }, isPartOf: { "@id": SITE + "/#website" } },
     website, crumbs({ name: "Česká typografie pro Affinity", item: SITE + TYPO })
   ] },
@@ -219,6 +219,7 @@ code { font-size: .92em; }`,
 <p class="meta">Skript pro Affinity 3.3 a novější · verze 1.0, listopad 2026 · zdarma, licence GNU GPL v3, © 2026 Matěj Moravec</p>
 <p>Skript, který jedním kliknutím opraví českou sazbu v Affinity: nedělitelné mezery za jednoznakovými předložkami, uvozovky, pomlčky a další drobnosti, na které se v textech od klientů pořád zapomíná. Je zdarma a otevřený, takže ho může kdokoli používat, upravovat a navrhovat vylepšení.</p>
 <a class="get" href="/assets/ceska-typografie/CeskaTypografie.js" download>Stáhnout CeskaTypografie.js</a>
+<p class="meta">Zdrojový kód a návrhy úprav: <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity">GitHub</a></p>
 
 <h2>Co opravuje</h2>
 <ul>
@@ -245,6 +246,9 @@ code { font-size: .92em; }`,
 <h2>Inspirace TypoSkriptem</h2>
 <p>Předlohou byl <a href="https://typoskript.cz/">TypoSkript</a> Františka Erbena, nástroj na opravu české sazby v Adobe InDesign, který čeští grafici a sazeči používají už roky. Pro Affinity nic podobného nebylo, tak vznikl tenhle skript.</p>
 <p>Česká typografie pro Affinity je ale napsaná celá znovu, od nuly. S TypoSkriptem nesdílí žádný kód, pravidla vycházejí z normy pro úpravu písemností ČSN 01 6910 a z běžných zvyklostí české sazby. Pokud pracujete v InDesignu, sáhněte po originále: <a href="https://typoskript.erben.work/aktualni-verze/">aktuální verze TypoSkriptu</a> a <a href="https://typoskript.erben.work/napoveda/">nápověda</a>.</p>
+
+<h2>Otevřený kód a návrhy úprav</h2>
+<p>Zdrojový kód je veřejně na GitHubu: <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity">ceska-typografie-affinity</a>. Když skript něco opraví špatně nebo mu chybí pravidlo, <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity/issues/new/choose">nahlaste to</a> a přidejte ukázku textu. Kdo umí JavaScript, může rovnou poslat <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity/pulls">pull request</a> s úpravou.</p>
 
 <h2>Licence</h2>
 <p>Skript je zdarma pod licencí <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a>. Můžete ho používat i v placené práci, upravovat ho a šířit dál. Když ale upravenou verzi zveřejníte, musí zůstat otevřená pod stejnou licencí a s uvedeným autorem.</p>

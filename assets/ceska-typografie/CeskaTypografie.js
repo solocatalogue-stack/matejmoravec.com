@@ -3,7 +3,9 @@
 /*
   Česká typografie pro Affinity (verze 1.0, listopad 2026)
   Skript pro Affinity 3.3+ (Scripting).
-  © 2026 Matěj Moravec, licence MIT. https://matejmoravec.com
+  © 2026 Matěj Moravec, licence GNU GPL v3 (viz LICENSE).
+  https://github.com/solocatalogue-stack/ceska-typografie-affinity
+  https://matejmoravec.com
 
   Inspirováno TypoSkriptem Františka Erbena pro Adobe InDesign
   (https://typoskript.cz/). Kód je napsaný celý znovu, od nuly;
