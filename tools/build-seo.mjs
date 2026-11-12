@@ -210,7 +210,7 @@ li + li { margin-top: 6px; }
 code { font-size: .92em; }`,
   jsonld: { "@context": "https://schema.org", "@graph": [
     { "@type": "SoftwareApplication", "@id": SITE + TYPO + "#app", name: "Česká typografie pro Affinity", url: SITE + TYPO, description: typoText,
-      applicationCategory: "DesignApplication", keywords: "česká typografie, Affinity Publisher, TypoSkript pro Affinity, jednoznakové předložky, nedělitelné mezery, české uvozovky, skript", operatingSystem: "macOS, Windows", softwareVersion: "1.0", inLanguage: "cs",
+      applicationCategory: "DesignApplication", keywords: "česká typografie, Affinity Publisher, TypoSkript pro Affinity, jednoznakové předložky, nedělitelné mezery, české uvozovky, skript", operatingSystem: "macOS, Windows", softwareRequirements: "Affinity 3.3 nebo novější", softwareVersion: "1.0", inLanguage: "cs",
       downloadUrl: SITE + "/assets/ceska-typografie/CeskaTypografie.js", codeRepository: "https://github.com/solocatalogue-stack/ceska-typografie-affinity", sameAs: "https://github.com/solocatalogue-stack/ceska-typografie-affinity", license: "https://www.gnu.org/licenses/gpl-3.0.html",
       offers: { "@type": "Offer", price: "0", priceCurrency: "CZK" }, author: { "@id": SITE + "/#person" }, isPartOf: { "@id": SITE + "/#website" } },
     website, crumbs({ name: "Česká typografie pro Affinity", item: SITE + TYPO })
@@ -234,6 +234,7 @@ code { font-size: .92em; }`,
 <p>Každé pravidlo jde v okně skriptu vypnout. Formátování textu zůstane, jak bylo, a celou opravu vrátíte jedním Cmd+Z.</p>
 
 <h2>Instalace</h2>
+<p>Skript funguje jen v Affinity 3.3 a novějším, tedy v novém Affinity od Canvy. Starší Affinity Publisher, Designer a Photo verze 1 a 2 skripty spouštět neumí, takže v nich nepoběží.</p>
 <ol>
 <li>V Affinity otevřete Settings › Scripting a zapněte <em>Enable Affinity Scripting</em>.</li>
 <li>Stažený soubor otevřete v textovém editoru (třeba TextEdit), označte všechno a zkopírujte.</li>
