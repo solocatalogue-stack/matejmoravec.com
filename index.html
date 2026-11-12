@@ -60,7 +60,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 </head><body style="margin:0">
 <style>
-/* Layout: white page, one Helvetica bar (name / Works / About / Contact). Works opens floating tag bubbles; a picked bubble grows into the page colour and filters the masonry grid (JS columns, filled left to right). A project opens as a full-page sheet. Deliberately single white theme. */
+/* Layout: white page, one Helvetica bar (name / Works / About). Works opens floating tag bubbles; a picked bubble grows into the page colour and filters the masonry grid (JS columns, filled left to right). A project opens as a full-page sheet. Deliberately single white theme. */
 :root {
   color-scheme: light;
   --bg: #ffffff;
@@ -351,7 +351,31 @@ function layout(force) {
 layout();
 addEventListener("resize", () => layout());
 
-function openMenu() { clearTimeout(closeT); wrap.classList.add("open"); worksBtn.setAttribute("aria-expanded", "true"); }
+// keep every bubble inside the window: squeeze the x positions if the cloud is too wide, then slide the cloud in from the edge
+function fitCloud() {
+  const pad = 16, bs = [...cloud.children], vw = document.documentElement.clientWidth;
+  cloud.style.marginLeft = "0px";
+  bs.forEach(b => { b.style.left = tagById(b.dataset.id).x + "px"; });
+  const room = vw - 2 * pad;
+  // a hovered bubble grows 1.2 times, so leave a tenth of its width spare on each side
+  const span = () => { const L = Math.min(...bs.map(b => b.offsetLeft - b.offsetWidth * .1)), R = Math.max(...bs.map(b => b.offsetLeft + b.offsetWidth * 1.1)); return [L, R]; };
+  let [L, R] = span();
+  if (R - L > room) {
+    const xs = bs.map(b => b.offsetLeft), maxX = Math.max(...xs), wide = R - maxX;
+    const k = Math.max(0, (room - wide - (Math.min(...xs) - L)) / maxX);
+    bs.forEach((b, i) => { b.style.left = Math.round(xs[i] * k) + "px"; });
+    [L, R] = span();
+  }
+  const c = cloud.getBoundingClientRect().left;
+  let shift = 0;
+  if (c + R > vw - pad) shift = vw - pad - (c + R);
+  if (c + L + shift < pad) shift = pad - (c + L);
+  cloud.style.marginLeft = Math.round(shift) + "px";
+}
+// the closed cloud is invisible but still takes room, so it is fitted from the start too, or phones get a sideways scroll
+fitCloud();
+addEventListener("resize", fitCloud);
+function openMenu() { clearTimeout(closeT); fitCloud(); wrap.classList.add("open"); worksBtn.setAttribute("aria-expanded", "true"); }
 function closeMenu() { wrap.classList.remove("open"); worksBtn.setAttribute("aria-expanded", "false"); }
 if (matchMedia("(hover: hover)").matches) {
   wrap.addEventListener("mouseenter", openMenu);
