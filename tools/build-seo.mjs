@@ -49,8 +49,8 @@ const paragraphs = p => [p.text, ...(p.more || []), ...p.shots.filter(f => f && 
 
 const EMAIL_JS = `<script>document.querySelectorAll(".mail").forEach(a => { const e = ["moc.cevaromjetam", "johA"].map(s => [...s].reverse().join("")).reverse().join(String.fromCharCode(64)).toLowerCase(); a.href = "mailto:" + e; a.textContent = e; });</script>`;
 
-const page = ({ path, title, description, image, imageAlt = title, body, jsonld, noindex }) => `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+const page = ({ path, title, description, image, imageAlt = title, body, jsonld, noindex, lang = "en", locale = "en_GB", css = "" }) => `<!doctype html>
+<html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="author" content="Matěj Moravec">
@@ -67,7 +67,7 @@ const page = ({ path, title, description, image, imageAlt = title, body, jsonld,
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${esc(imageAlt)}">
-<meta property="og:locale" content="en_GB">
+<meta property="og:locale" content="${locale}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${SITE}${image}">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="Summary for AI assistants">
@@ -95,7 +95,7 @@ dt { color: var(--muted); }
 dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .more { margin-top: 48px; font-size: 14px; }
 @media (max-width: 560px) { nav { gap: 16px; } }
-</style>
+${css}</style>
 </head><body>
 <header class="gut"><nav><a href="/">Matěj Moravec</a><a href="/">Works</a><a href="/about/">About</a><a href="/about/#contact">Contact</a></nav></header>
 <main class="gut">
@@ -189,12 +189,80 @@ for (const [from, to] of Object.entries(OLD)) {
 `);
 }
 
+
+// free tools: a Czech page for the open-source Czech typography script for Affinity
+const TYPO = "/ceska-typografie/";
+const typoText = "Skript zdarma pro Affinity Publisher, který opraví českou sazbu: nedělitelné mezery za jednoznakovými předložkami, české uvozovky, pomlčky, data i jednotky. Inspirovaný TypoSkriptem, napsaný od nuly.";
+// the page practises what the script does: no single-letter word or number left at a line end
+const czNbsp = html => html.replace(/>([^<]+)</g, (m, t) => ">" + t
+  .replace(/(^|[\s(„])([ksvzouaiKSVZOUAI]) (?=\S)/g, "$1$2\u00a0").replace(/(^|[\s(„])([ksvzouaiKSVZOUAI]) (?=\S)/g, "$1$2\u00a0")
+  .replace(/(\d) (?=\d{3}\b|%|Kč|Ph|Cmd)/g, "$1\u00a0").replace(/(\d\.) (?=\d|ledna)/g, "$1\u00a0") + "<");
+write("ceska-typografie/index.html", page({
+  path: TYPO, lang: "cs", locale: "cs_CZ",
+  title: "Česká typografie pro Affinity Publisher – skript jako TypoSkript, zdarma",
+  description: typoText,
+  image: "/assets/og.jpg",
+  css: `.get { display: inline-block; margin-top: 30px; padding: 14px 26px; font-size: 19px; text-decoration: none; background: #fff; border: 1.5px solid var(--ink); border-radius: 14px; box-shadow: 0 6px 0 0 var(--ink); transition: transform .15s ease, box-shadow .15s ease; }
+.get:hover { transform: translateY(-2px); box-shadow: 0 8px 0 0 var(--ink); }
+.get:active { transform: translateY(6px); box-shadow: none; }
+ul, ol { max-width: 58ch; font-size: 17px; line-height: 1.45; margin: 14px 0 0; padding-left: 1.3em; }
+li + li { margin-top: 6px; }
+code { font-size: .92em; }`,
+  jsonld: { "@context": "https://schema.org", "@graph": [
+    { "@type": "SoftwareApplication", "@id": SITE + TYPO + "#app", name: "Česká typografie pro Affinity", url: SITE + TYPO, description: typoText,
+      applicationCategory: "DesignApplication", keywords: "česká typografie, Affinity Publisher, TypoSkript pro Affinity, jednoznakové předložky, nedělitelné mezery, české uvozovky, skript", operatingSystem: "macOS, Windows", softwareRequirements: "Affinity 3.3 nebo novější", softwareVersion: "1.0", inLanguage: "cs",
+      downloadUrl: SITE + "/assets/ceska-typografie/CeskaTypografie.js", codeRepository: "https://github.com/solocatalogue-stack/ceska-typografie-affinity", sameAs: "https://github.com/solocatalogue-stack/ceska-typografie-affinity", license: "https://www.gnu.org/licenses/gpl-3.0.html",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "CZK" }, author: { "@id": SITE + "/#person" }, isPartOf: { "@id": SITE + "/#website" } },
+    website, crumbs({ name: "Česká typografie pro Affinity", item: SITE + TYPO })
+  ] },
+  body: czNbsp(`<h1>Česká typografie pro Affinity</h1>
+<p class="meta">Pro Affinity od Canvy, verze 3.3 a novější · verze skriptu 1.0, listopad 2026 · zdarma, licence GNU GPL v3, © 2026 Matěj Moravec</p>
+<p>Skript, který jedním kliknutím opraví českou sazbu v Affinity: nedělitelné mezery za jednoznakovými předložkami, uvozovky, pomlčky a další drobnosti, na které se v textech od klientů pořád zapomíná. Je zdarma a otevřený, takže ho může kdokoli používat, upravovat a navrhovat vylepšení.</p>
+<a class="get" href="/assets/ceska-typografie/CeskaTypografie.js" download>Stáhnout CeskaTypografie.js</a>
+<p class="meta">Zdrojový kód a návrhy úprav: <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity">GitHub</a></p>
+
+<h2>Co opravuje</h2>
+<ul>
+<li>nedělitelné mezery za jednoznakovými předložkami a spojkami (v, k, s, z, o, u, a, i), aby nezůstávaly na konci řádku</li>
+<li>mezery mezi číslem a jednotkou nebo měnou a v tisících (250 Kč, 10 %, 1 000)</li>
+<li>data (3. 12. 2026, 1. ledna), tituly (Ing., Mgr., Ph.D.), iniciály a zkratky (s. r. o., a. s., č. p.)</li>
+<li>anglické uvozovky na české „ “ a ‚ ‘</li>
+<li>pomlčky v rozsazích (10–15) a mezi slovy, tři tečky na výpustku …, znak × u rozměrů</li>
+<li>zdvojené mezery a tabulátory</li>
+<li>e-maily a webové adresy, aby se nelámaly na konci řádku</li>
+</ul>
+<p>Každé pravidlo jde v okně skriptu vypnout. Formátování textu zůstane, jak bylo, a celou opravu vrátíte jedním Cmd+Z.</p>
+
+<h2>Instalace</h2>
+<p>Skript funguje v Affinity od Canvy ve verzi 3.3 a novější, protože skriptování přibylo až v této verzi. Ve starých aplikacích Affinity Publisher, Designer a Photo (V1 a V2) nepoběží.</p>
+<ol>
+<li>V Affinity otevřete Settings › Scripting a zapněte <em>Enable Affinity Scripting</em>.</li>
+<li>Stažený soubor otevřete v textovém editoru (třeba TextEdit), označte všechno a zkopírujte.</li>
+<li>V Affinity otevřete Window › Scripting › Script Editor, zvolte New Script, text vložte a uložte ho pod názvem „Česká typografie“.</li>
+</ol>
+
+<h2>Použití</h2>
+<p>Označte textové rámečky, které chcete opravit. Když nic neoznačíte, skript projde celý dokument. Pak v knihovně skriptů klikněte na Česká typografie, vyberte pravidla a potvrďte.</p>
+
+<h2>Inspirace TypoSkriptem</h2>
+<p>Předlohou byl <a href="https://typoskript.cz/">TypoSkript</a> Františka Erbena, nástroj na opravu české sazby v Adobe InDesign, který čeští grafici a sazeči používají už roky. Pro Affinity nic podobného nebylo, tak vznikl tenhle skript.</p>
+<p>Česká typografie pro Affinity je ale napsaná celá znovu, od nuly. S TypoSkriptem nesdílí žádný kód, pravidla vycházejí z normy pro úpravu písemností ČSN 01 6910 a z běžných zvyklostí české sazby. Pokud pracujete v InDesignu, sáhněte po originále: <a href="https://typoskript.erben.work/aktualni-verze/">aktuální verze TypoSkriptu</a> a <a href="https://typoskript.erben.work/napoveda/">nápověda</a>.</p>
+
+<h2>Otevřený kód a návrhy úprav</h2>
+<p>Zdrojový kód je veřejně na GitHubu: <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity">ceska-typografie-affinity</a>. Když skript něco opraví špatně nebo mu chybí pravidlo, <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity/issues/new/choose">nahlaste to</a> a přidejte ukázku textu. Kdo umí JavaScript, může rovnou poslat <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity/pulls">pull request</a> s úpravou.</p>
+
+<h2>Licence</h2>
+<p>Skript je zdarma pod licencí <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a>. Můžete ho používat i v placené práci, upravovat ho a šířit dál. Když ale upravenou verzi zveřejníte, musí zůstat otevřená pod stejnou licencí a s uvedeným autorem.</p>
+<p class="more"><a href="/">Portfolio Matěje Moravce</a> · <a href="/about/">O mně a kontakt</a></p>`)
+}));
+
 // sitemap with images, so project images can show up in image search
 const imgs = list => list.filter(f => !isVideo(f)).slice(0, 20).map(f => `<image:image><image:loc>${SITE}${encodeURI(media(f))}</image:loc></image:image>`).join("");
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 <url><loc>${SITE}/</loc><lastmod>${today}</lastmod><image:image><image:loc>${SITE}/assets/og.jpg</image:loc></image:image></url>
 <url><loc>${SITE}/about/</loc><lastmod>${today}</lastmod></url>
+<url><loc>${SITE}${TYPO}</loc><lastmod>${today}</lastmod></url>
 ${pages.map(p => `<url><loc>${SITE}/${p.slug}/</loc><lastmod>${today}</lastmod>${imgs(files(p))}</url>`).join("\n")}
 </urlset>
 `);
@@ -231,6 +299,9 @@ ${links.join("\n")}
 write("llms.txt", `${summary}
 ## Works
 ${pages.map(p => `- [${p.title}](${SITE}/${p.slug}/): ${short(p.text, 200)}`).join("\n")}
+
+## Free tools
+- [Česká typografie pro Affinity](${SITE}${TYPO}): ${typoText}
 `);
 write("llms-full.txt", `${summary}
 ## Works
@@ -242,7 +313,7 @@ ${paragraphs(p).join("\n\n")}${p.link ? `\n\n${p.link[1]}: ${p.link[0]}` : ""}`)
 `);
 
 // plain links in the homepage grid for crawlers and no-JS visitors; layout() replaces them on load
-const list = `<ul id="static-works">${PROJECTS.map(p => `<li>${p.text ? `<a href="/${p.slug}/">${esc(p.title)}</a>` : esc(p.title)} · ${esc(p.years)}</li>`).join("")}<li><a href="/about/">About and contact</a></li></ul>`;
+const list = `<ul id="static-works">${PROJECTS.map(p => `<li>${p.text ? `<a href="/${p.slug}/">${esc(p.title)}</a>` : esc(p.title)} · ${esc(p.years)}</li>`).join("")}<li><a href="/about/">About and contact</a></li><li><a href="/ceska-typografie/" lang="cs">Česká typografie pro Affinity</a></li></ul>`;
 index = index.replace(/<div id="grid">[^]*?<\/div><\/main>/, `<div id="grid">${list}</div></main>`);
 // homepage: the site and the list of works as structured data, next to the Person block
 const home = { "@context": "https://schema.org", "@graph": [
