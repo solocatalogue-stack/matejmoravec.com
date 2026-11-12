@@ -202,13 +202,12 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
       <div id="cloud" role="menu" aria-label="Filter works by tag"></div>
     </div>
     <button id="aboutBtn">About</button>
-    <button id="contactBtn">Contact</button>
   </nav>
 </header>
 
 <div id="active" class="gut"></div>
 <main class="gut"><div id="grid"></div></main>
-<footer class="gut" id="foot"><a id="hello" class="hello" href="#contact">Contact me</a></footer>
+<footer class="gut" id="foot"><a id="hello" class="hello" href="#about">Contact me</a></footer>
 <canvas id="confetti" aria-hidden="true"></canvas>
 <div id="sheet" class="sheet gut" hidden role="dialog" aria-modal="true"></div>
 
@@ -420,12 +419,12 @@ function closeSheet() {
   if (sheet.hidden) return;
   sheet.classList.remove("show");
   document.body.style.overflow = "";
-  document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
+  $("#aboutBtn").removeAttribute("aria-pressed");
   setTimeout(() => { sheet.hidden = true; sheet.innerHTML = ""; }, 350);
   setHash("");
 }
 
-// #slug, #about and #contact open that sheet, so a project can be linked directly
+// #slug and #about open that sheet (#contact, from old links, opens About at the contact details), so a project can be linked directly
 function setHash(h) { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); }
 function openFromHash() {
   const h = decodeURIComponent(location.hash.slice(1));
@@ -506,9 +505,9 @@ function openProject(p) {
 
 // Assembled at runtime so the address never appears as plain text in the page source
 const EMAIL = ["moc.cevaromjetam", "johA"].map(s => [...s].reverse().join("")).reverse().join(String.fromCharCode(64)).toLowerCase();
+// About and contact are one page; "contact" opens it scrolled to the contact details
 function openInfo(which) {
-  document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
-  $(which === "about" ? "#aboutBtn" : "#contactBtn").setAttribute("aria-pressed", "true");
+  $("#aboutBtn").setAttribute("aria-pressed", "true");
   const about = `<h2>Art director and visual designer, born in Prague, based in Lausanne.</h2>
     <img class="portrait" src="/assets/about/matej-moravec.jpg" alt="Portrait of Matěj Moravec" width="1200" height="1600">
     <p>I build and look after brands: identity systems, campaigns, websites and the everyday content that keeps them alive. For five years I was the only designer in Chiquita's global marketing team, carrying one brand across European markets and formats, from the London bus wrap to the Sustainability Report. Since 2025 I've been Senior Lead Designer at eeproperty in Lutry, and I've grown the Shareman brand across animation, websites, internal communication and print.</p>
@@ -529,7 +528,7 @@ function openInfo(which) {
     <dt>2019</dt><dd>Mut zur Wut, finalist</dd>
     <dt>2019</dt><dd>Poster Tribune #10, featured portfolio</dd>
     <dt>2013</dt><dd>Best European Game Awards, nominations for art direction and game design</dd></dl>
-    <h3>Contact</h3>`;
+    <h3 id="contactInfo">Contact</h3>`;
   const contact = `<dl>
     <dt>Email</dt><dd><a id="mail" href="mailto:${EMAIL}" style="color:inherit">${EMAIL}</a><button id="copy">Copy</button></dd>
     <dt>Instagram</dt><dd><a href="https://instagram.com/matejmoravec_com" target="_blank" rel="noopener" style="color:inherit">@matejmoravec_com</a></dd>
@@ -539,9 +538,10 @@ function openInfo(which) {
     <dt>Posters</dt><dd><a href="https://www.typographicposters.com/matej-moravec/5f6de3ae13572f5cee1b819a" target="_blank" rel="noopener" style="color:inherit">typographicposters.com/matej-moravec</a></dd>
     <dt>Music</dt><dd><a href="https://nathansolo.com" target="_blank" rel="noopener" style="color:inherit">nathansolo.com</a></dd>
     <dt>Based in</dt><dd>Lausanne, Switzerland</dd></dl>`;
-  showSheet(`<div class="bar"><strong>${which === "about" ? "About" : "Contact"}</strong><button class="close">Close ×</button></div>
-    <div class="info">${which === "about" ? about + cv + contact : `<h2>Say hello.</h2>` + contact}</div>`);
-  setHash(which);
+  showSheet(`<div class="bar"><strong>About</strong><button class="close">Close ×</button></div>
+    <div class="info">${about + cv + contact}</div>`);
+  setHash("about");
+  if (which === "contact") requestAnimationFrame(() => $("#contactInfo").scrollIntoView({ block: "start" }));
   const copy = $("#copy");
   copy.addEventListener("click", () => {
     navigator.clipboard.writeText(EMAIL).then(() => { copy.textContent = "Copied"; }).catch(() => {
@@ -550,7 +550,6 @@ function openInfo(which) {
   });
 }
 $("#aboutBtn").addEventListener("click", () => openInfo("about"));
-$("#contactBtn").addEventListener("click", () => openInfo("contact"));
 $("#home").addEventListener("click", () => { closeSheet(); reset(); });
 addEventListener("hashchange", openFromHash);
 openFromHash();
