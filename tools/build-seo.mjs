@@ -216,7 +216,7 @@ code { font-size: .92em; }`,
     website, crumbs({ name: "Česká typografie pro Affinity", item: SITE + TYPO })
   ] },
   body: czNbsp(`<h1>Česká typografie pro Affinity</h1>
-<p class="meta">Skript pro Affinity 3.3 a novější · verze 1.0, listopad 2026 · zdarma, licence GNU GPL v3, © 2026 Matěj Moravec</p>
+<p class="meta">Pro Affinity od Canvy, verze 3.3 a novější · verze skriptu 1.0, listopad 2026 · zdarma, licence GNU GPL v3, © 2026 Matěj Moravec</p>
 <p>Skript, který jedním kliknutím opraví českou sazbu v Affinity: nedělitelné mezery za jednoznakovými předložkami, uvozovky, pomlčky a další drobnosti, na které se v textech od klientů pořád zapomíná. Je zdarma a otevřený, takže ho může kdokoli používat, upravovat a navrhovat vylepšení.</p>
 <a class="get" href="/assets/ceska-typografie/CeskaTypografie.js" download>Stáhnout CeskaTypografie.js</a>
 <p class="meta">Zdrojový kód a návrhy úprav: <a href="https://github.com/solocatalogue-stack/ceska-typografie-affinity">GitHub</a></p>
@@ -234,7 +234,7 @@ code { font-size: .92em; }`,
 <p>Každé pravidlo jde v okně skriptu vypnout. Formátování textu zůstane, jak bylo, a celou opravu vrátíte jedním Cmd+Z.</p>
 
 <h2>Instalace</h2>
-<p>Skript funguje jen v Affinity 3.3 a novějším, tedy v novém Affinity od Canvy. Starší Affinity Publisher, Designer a Photo verze 1 a 2 skripty spouštět neumí, takže v nich nepoběží.</p>
+<p>Skript funguje v Affinity od Canvy ve verzi 3.3 a novější, protože skriptování přibylo až v této verzi. Ve starých aplikacích Affinity Publisher, Designer a Photo (V1 a V2) nepoběží.</p>
 <ol>
 <li>V Affinity otevřete Settings › Scripting a zapněte <em>Enable Affinity Scripting</em>.</li>
 <li>Stažený soubor otevřete v textovém editoru (třeba TextEdit), označte všechno a zkopírujte.</li>
