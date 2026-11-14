@@ -1,8 +1,9 @@
 'use strict';
 
 /*
-  Česká typografie pro Affinity (verze 1.0, listopad 2026)
-  Skript pro Affinity 3.3+ (Scripting).
+  Česká typografie pro Affinity · verze skriptu 1.0 (listopad 2026)
+  Potřebuje Affinity od Canvy verze 3.3 nebo novější.
+  Ve starých aplikacích Affinity V1 a V2 nefunguje (nemají skriptování).
   © 2026 Matěj Moravec, licence GNU GPL v3 (viz LICENSE).
   https://github.com/solocatalogue-stack/ceska-typografie-affinity
   https://matejmoravec.com
