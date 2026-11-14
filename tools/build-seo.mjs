@@ -207,7 +207,8 @@ write("ceska-typografie/index.html", page({
 .get:active { transform: translateY(6px); box-shadow: none; }
 ul, ol { max-width: 58ch; font-size: 17px; line-height: 1.45; margin: 14px 0 0; padding-left: 1.3em; }
 li + li { margin-top: 6px; }
-code { font-size: .92em; }`,
+code { font-size: .92em; }
+pre { max-width: 100%; overflow-x: auto; background: rgba(0,0,0,.05); padding: 10px 12px; border-radius: 6px; margin: 10px 0; font-size: 13px; }`,
   jsonld: { "@context": "https://schema.org", "@graph": [
     { "@type": "SoftwareApplication", "@id": SITE + TYPO + "#app", name: "Česká typografie pro Affinity", url: SITE + TYPO, description: typoText,
       applicationCategory: "DesignApplication", keywords: "česká typografie, Affinity Publisher, TypoSkript pro Affinity, jednoznakové předložky, nedělitelné mezery, české uvozovky, skript", operatingSystem: "macOS, Windows", softwareRequirements: "Affinity 3.3 nebo novější", softwareVersion: "1.0", inLanguage: "cs",
@@ -235,14 +236,27 @@ code { font-size: .92em; }`,
 
 <h2>Instalace</h2>
 <p>Skript funguje v Affinity od Canvy ve verzi 3.3 a novější, protože skriptování přibylo až v této verzi. Ve starých aplikacích Affinity Publisher, Designer a Photo (V1 a V2) nepoběží.</p>
+<p>Skript se nevkládá do Affinity celý. Uložíte ho jako soubor a Affinity ho načítá jedním řádkem. Když pak vyjde nová verze, stačí soubor přepsat.</p>
 <ol>
-<li>V Affinity otevřete Settings › Scripting a zapněte <em>Enable Affinity Scripting</em>.</li>
-<li>Stažený soubor otevřete v textovém editoru (třeba TextEdit), označte všechno a zkopírujte.</li>
-<li>V Affinity otevřete Window › Scripting › Script Editor, zvolte New Script, text vložte a uložte ho pod názvem „Česká typografie“.</li>
+<li><a href="/assets/ceska-typografie/CeskaTypografie.js" download>Stáhněte CeskaTypografie.js</a> a uložte ho do vlastní složky, třeba <strong>Dokumenty › Affinity skripty</strong>.</li>
+<li>V Affinity otevřete <strong>Affinity › Settings › Scripting</strong>. Zapněte <strong>Enable Affinity Scripting</strong> a dole u <strong>File System Access</strong> klikněte na <strong>Add</strong> a vyberte tu složku.</li>
+<li>Otevřete <strong>Window › Scripting › Script Editor</strong> a klikněte na <strong>New Script</strong>.</li>
+<li>Vložte do editoru tento jeden řádek a cestu nahraďte cestou ke svému souboru:
+<pre><code>require('/Users/vase-jmeno/Documents/Affinity skripty/CeskaTypografie.js').main();</code></pre>
+Přesnou cestu zjistíte ve Finderu: klikněte na soubor pravým tlačítkem, podržte klávesu Option a zvolte <strong>Zkopírovat „CeskaTypografie.js“ jako cestu</strong>.</li>
+<li>Klikněte na ozubené kolečko vedle tlačítka <strong>Run</strong> a zaškrtněte <strong>File System</strong>. Bez toho skript soubor nenačte a nic se nestane.</li>
+<li>Dejte <strong>Save As</strong> a pojmenujte skript třeba „Česká typografie“. Objeví se v panelu <strong>Scripts Library</strong>.</li>
 </ol>
 
 <h2>Použití</h2>
-<p>Označte textové rámečky, které chcete opravit. Když nic neoznačíte, skript projde celý dokument. Pak v knihovně skriptů klikněte na Česká typografie, vyberte pravidla a potvrďte.</p>
+<ol>
+<li>Vyberte textové rámečky, které chcete opravit. Pokud nevyberete nic, opraví se celý dokument.</li>
+<li>V panelu <strong>Scripts Library</strong> klikněte na skript pravým tlačítkem a zvolte <strong>Run Script</strong>.</li>
+<li>V dialogu zvolte rozsah (<strong>Celý dokument</strong> nebo <strong>Vybrané texty</strong>) a pravidla a potvrďte <strong>OK</strong>.</li>
+<li>Skript nakonec napíše, kolik míst opravil. Všechno vrátíte jedním Cmd+Z.</li>
+</ol>
+<p>Žádný automat nenahradí typografa, proto si prosím výsledek projděte.</p>
+<p><strong>Když se nic nestane:</strong> otevřete v panelu skriptů kartu <strong>Running Scripts › View Log</strong>. Hláška „Failed to resolve module“ znamená, že chybí složka v bodě 2 nebo zaškrtnutí <strong>File System</strong> v bodě 5.</p>
 
 <h2>Inspirace TypoSkriptem</h2>
 <p>Předlohou byl <a href="https://typoskript.cz/">TypoSkript</a> Františka Erbena, nástroj na opravu české sazby v Adobe InDesign, který čeští grafici a sazeči používají už roky. Pro Affinity nic podobného nebylo, tak vznikl tenhle skript.</p>
