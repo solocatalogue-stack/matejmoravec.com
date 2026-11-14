@@ -253,10 +253,11 @@ Přesnou cestu zjistíte ve Finderu: klikněte na soubor pravým tlačítkem, po
 <li>Vyberte textové rámečky, které chcete opravit. Pokud nevyberete nic, opraví se celý dokument.</li>
 <li>V panelu <strong>Scripts Library</strong> klikněte na skript pravým tlačítkem a zvolte <strong>Run Script</strong>.</li>
 <li>V dialogu zvolte rozsah (<strong>Celý dokument</strong> nebo <strong>Vybrané texty</strong>) a pravidla a potvrďte <strong>OK</strong>.</li>
-<li>Skript nakonec napíše, kolik míst opravil. Všechno vrátíte jedním Cmd+Z.</li>
+<li>Skript nakonec napíše, kolik míst opravil. Opravu vrátíte přes Cmd+Z, většinou jedním krokem.</li>
 </ol>
 <p>Žádný automat nenahradí typografa, proto si prosím výsledek projděte.</p>
 <p><strong>Když se nic nestane:</strong> otevřete v panelu skriptů kartu <strong>Running Scripts › View Log</strong>. Hláška „Failed to resolve module“ znamená, že chybí složka v bodě 2 nebo zaškrtnutí <strong>File System</strong> v bodě 5.</p>
+<p><strong>Nová verze:</strong> stáhněte nový soubor, přepište jím ten starý a restartujte Affinity. Affinity si načtené skripty pamatuje až do restartu.</p>
 
 <h2>Inspirace TypoSkriptem</h2>
 <p>Předlohou byl <a href="https://typoskript.cz/">TypoSkript</a> Františka Erbena, nástroj na opravu české sazby v Adobe InDesign, který čeští grafici a sazeči používají už roky. Pro Affinity nic podobného nebylo, tak vznikl tenhle skript.</p>

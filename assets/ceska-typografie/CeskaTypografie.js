@@ -515,9 +515,11 @@ function main() {
         return true;
     }
 
-    let changed = 0, stories = 0, skipped = 0;
-    const builder = CompoundCommandBuilder.create();
-    let cmdCount = 0;
+    let skipped = 0;
+    // Úpravy po článcích, seskupené podle dvojstrany. Affinity zapíše text
+    // spolehlivě jen na aktuální dvojstraně, proto ji před zápisem přepínáme.
+    const groups = new Map();   // klíč dvojstrany -> { spread, items: [...] }
+    let order = 0;
 
     for (const node of targets) {
         let story;
@@ -533,33 +535,94 @@ function main() {
                 if (editsMatch(story, r.edits)) result = r;
             }
         } catch (e) { result = null; }
-        if (!result) result = computeEdits(storyTextExact(story), opts);
+        if (!result) {
+            try { result = computeEdits(storyTextExact(story), opts); }
+            catch (e) { skipped++; continue; }
+        }
 
         const { edits, noBreak } = result;
         if (!edits.length && !noBreak.length) continue;
 
+        const cmds = [];
         for (let i = edits.length - 1; i >= 0; i--) {
             const e = edits[i];
-            builder.addCommand(DocumentCommand.createSetText(textSel(node, e.begin, e.end), e.text));
-            cmdCount++;
+            cmds.push(() => DocumentCommand.createSetText(textSel(node, e.begin, e.end), e.text));
         }
-        for (const r of noBreak) {
-            builder.addCommand(DocumentCommand.createFormatText(textSel(node, r.begin, r.end), StoryDelta.createIsNoBreak(true)));
-            cmdCount++;
+        for (const r of noBreak)
+            cmds.push(() => DocumentCommand.createFormatText(textSel(node, r.begin, r.end), StoryDelta.createIsNoBreak(true)));
+
+        let spread = null;
+        try { spread = node.spread; } catch (e) { spread = null; }
+        let key = null;
+        if (spread) {
+            for (const [k, g] of groups) {
+                try { if (g.spread && g.spread.isSameNode(spread)) { key = k; break; } } catch (e) { /* další */ }
+            }
         }
-        changed += edits.length;
-        if (edits.length) stories++;
+        if (key === null) { key = order++; groups.set(key, { spread, items: [] }); }
+        groups.get(key).items.push({ cmds, edits: edits.length, total: edits.length + noBreak.length });
     }
 
-    if (!cmdCount) {
-        alert('Hotovo. Nebylo co opravit.');
+    if (!groups.size) {
+        alert(skipped ? 'Nebylo co opravit. Přeskočeno (tabulky apod.): ' + skipped + '.' : 'Hotovo. Nebylo co opravit.');
         return;
     }
-    doc.executeCommand(builder.createCommand());
 
+    let originalSpread = null;
+    try { originalSpread = doc.currentSpread; } catch (e) { /* ignorovat */ }
+
+    const setSpread = (spread) => DocumentCommand.createSetCurrentSpread(spread);
+    const tryRun = (cmd) => {
+        try { const r = doc.executeCommand(cmd); return r !== false; }
+        catch (e) { return false; }
+    };
+    const compound = (parts) => {
+        const b = CompoundCommandBuilder.create();
+        for (const c of parts) b.addCommand(c);
+        return b.createCommand();
+    };
+
+    let changed = 0, stories = 0, failed = 0, steps = 0;
+    const all = [...groups.values()];
+
+    // 1) Všechno najednou = jeden krok zpět.
+    const parts = [];
+    for (const g of all) {
+        if (g.spread) parts.push(setSpread(g.spread));
+        for (const it of g.items) for (const mk of it.cmds) parts.push(mk());
+    }
+    if (tryRun(compound(parts))) {
+        for (const g of all) for (const it of g.items) { changed += it.edits; if (it.total) stories++; }
+        steps = 1;
+    } else {
+        // 2) Po dvojstranách, a když ani to nejde, po jednotlivých článcích.
+        for (const g of all) {
+            if (g.spread) tryRun(setSpread(g.spread));
+            const cmds = [];
+            for (const it of g.items) for (const mk of it.cmds) cmds.push(mk());
+            if (tryRun(compound(cmds))) {
+                steps++;
+                for (const it of g.items) { changed += it.edits; if (it.total) stories++; }
+                continue;
+            }
+            for (const it of g.items) {
+                if (tryRun(compound(it.cmds.map(mk => mk())))) {
+                    steps++; changed += it.edits; if (it.total) stories++;
+                } else failed++;
+            }
+        }
+    }
+
+    if (originalSpread) tryRun(setSpread(originalSpread));
+
+    if (!stories && failed) {
+        alert('Affinity úpravy nepřijalo (texty: ' + failed + '). Zkus vybrat jeden textový rámeček a zvolit Vybrané texty. Pokud to nepomůže, napiš prosím do issues na GitHubu.');
+        return;
+    }
     let msg = 'Hotovo. Opraveno míst: ' + changed + ' (texty: ' + stories + ').';
     if (skipped) msg += '\nPřeskočeno (tabulky apod.): ' + skipped + '.';
-    msg += '\nVše vrátíš jedním Cmd+Z.';
+    if (failed) msg += '\nNepodařilo se upravit textů: ' + failed + '.';
+    msg += steps === 1 ? '\nVše vrátíš jedním Cmd+Z.' : '\nVrátit jde přes Cmd+Z (kroků: ' + steps + ').';
     alert(msg);
 }
 
