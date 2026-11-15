@@ -60,7 +60,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 </head><body style="margin:0">
 <style>
-/* Layout: white page, one Helvetica bar (name / Works / About / Contact). Works opens floating tag bubbles; a picked bubble grows into the page colour and filters the masonry grid (JS columns, filled left to right). A project opens as a full-page sheet. Deliberately single white theme. */
+/* Layout: white page, one Helvetica bar (name / Works / About). Works opens floating tag bubbles; a picked bubble grows into the page colour and filters the masonry grid (JS columns, filled left to right). A project opens as a full-page sheet. Deliberately single white theme. */
 :root {
   color-scheme: light;
   --bg: #ffffff;
@@ -202,13 +202,12 @@ main { position: relative; z-index: 5; padding-block: 18px 80px; }
       <div id="cloud" role="menu" aria-label="Filter works by tag"></div>
     </div>
     <button id="aboutBtn">About</button>
-    <button id="contactBtn">Contact</button>
   </nav>
 </header>
 
 <div id="active" class="gut"></div>
 <main class="gut"><div id="grid"></div></main>
-<footer class="gut" id="foot"><a id="hello" class="hello" href="#contact">Contact me</a></footer>
+<footer class="gut" id="foot"><a id="hello" class="hello" href="#about">Contact me</a></footer>
 <canvas id="confetti" aria-hidden="true"></canvas>
 <div id="sheet" class="sheet gut" hidden role="dialog" aria-modal="true"></div>
 
@@ -352,7 +351,31 @@ function layout(force) {
 layout();
 addEventListener("resize", () => layout());
 
-function openMenu() { clearTimeout(closeT); wrap.classList.add("open"); worksBtn.setAttribute("aria-expanded", "true"); }
+// keep every bubble inside the window: squeeze the x positions if the cloud is too wide, then slide the cloud in from the edge
+function fitCloud() {
+  const pad = 16, bs = [...cloud.children], vw = document.documentElement.clientWidth;
+  cloud.style.marginLeft = "0px";
+  bs.forEach(b => { b.style.left = tagById(b.dataset.id).x + "px"; });
+  const room = vw - 2 * pad;
+  // a hovered bubble grows 1.2 times, so leave a tenth of its width spare on each side
+  const span = () => { const L = Math.min(...bs.map(b => b.offsetLeft - b.offsetWidth * .1)), R = Math.max(...bs.map(b => b.offsetLeft + b.offsetWidth * 1.1)); return [L, R]; };
+  let [L, R] = span();
+  if (R - L > room) {
+    const xs = bs.map(b => b.offsetLeft), maxX = Math.max(...xs), wide = R - maxX;
+    const k = Math.max(0, (room - wide - (Math.min(...xs) - L)) / maxX);
+    bs.forEach((b, i) => { b.style.left = Math.round(xs[i] * k) + "px"; });
+    [L, R] = span();
+  }
+  const c = cloud.getBoundingClientRect().left;
+  let shift = 0;
+  if (c + R > vw - pad) shift = vw - pad - (c + R);
+  if (c + L + shift < pad) shift = pad - (c + L);
+  cloud.style.marginLeft = Math.round(shift) + "px";
+}
+// the closed cloud is invisible but still takes room, so it is fitted from the start too, or phones get a sideways scroll
+fitCloud();
+addEventListener("resize", fitCloud);
+function openMenu() { clearTimeout(closeT); fitCloud(); wrap.classList.add("open"); worksBtn.setAttribute("aria-expanded", "true"); }
 function closeMenu() { wrap.classList.remove("open"); worksBtn.setAttribute("aria-expanded", "false"); }
 if (matchMedia("(hover: hover)").matches) {
   wrap.addEventListener("mouseenter", openMenu);
@@ -420,12 +443,12 @@ function closeSheet() {
   if (sheet.hidden) return;
   sheet.classList.remove("show");
   document.body.style.overflow = "";
-  document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
+  $("#aboutBtn").removeAttribute("aria-pressed");
   setTimeout(() => { sheet.hidden = true; sheet.innerHTML = ""; }, 350);
   setHash("");
 }
 
-// #slug, #about and #contact open that sheet, so a project can be linked directly
+// #slug and #about open that sheet (#contact, from old links, opens About at the contact details), so a project can be linked directly
 function setHash(h) { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); }
 function openFromHash() {
   const h = decodeURIComponent(location.hash.slice(1));
@@ -506,13 +529,14 @@ function openProject(p) {
 
 // Assembled at runtime so the address never appears as plain text in the page source
 const EMAIL = ["moc.cevaromjetam", "johA"].map(s => [...s].reverse().join("")).reverse().join(String.fromCharCode(64)).toLowerCase();
+// About and contact are one page; "contact" opens it scrolled to the contact details
 function openInfo(which) {
-  document.querySelectorAll("#aboutBtn,#contactBtn").forEach(b => b.removeAttribute("aria-pressed"));
-  $(which === "about" ? "#aboutBtn" : "#contactBtn").setAttribute("aria-pressed", "true");
+  $("#aboutBtn").setAttribute("aria-pressed", "true");
   const about = `<h2>Art director and visual designer, born in Prague, based in Lausanne.</h2>
     <img class="portrait" src="/assets/about/matej-moravec.jpg" alt="Portrait of Matěj Moravec" width="1200" height="1600">
-    <p>I work across typography, motion and audiovisual media. I first earned an associate degree in graphic design and printed media at the Graphic School in Prague. I then studied type design, typography and visual communication at the Academy of Arts, Architecture and Design in Prague (UMPRUM), including a year at the Willem de Kooning Academy in Rotterdam.</p>
-    <p>I've worked on commercial, cultural and independent projects, from global brand work for Chiquita to collaborations with Balmer Hählen in Lausanne and Marvil in Prague. I co-founded the label Pulse Records and make music as Nathan Solo (not Han Solo), a name that came from asking a friend what to call my solo project.</p>`;
+    <p>I build and look after brands: identity systems, campaigns, websites and the everyday content that keeps them alive. For five years I was the only designer in Chiquita's global marketing team, carrying one brand across European markets and formats, from the London bus wrap to the Sustainability Report. Since 2025 I've been Senior Lead Designer at eeproperty in Lutry, and I've grown the Shareman brand across animation, websites, internal communication and print.</p>
+    <p>Typography, motion and audiovisual work sit at the core of what I make. I studied type design, typography and visual communication at the Academy of Arts, Architecture and Design in Prague (UMPRUM), including a year at the Willem de Kooning Academy in Rotterdam, after an associate degree in graphic design and printed media at the Graphic School in Prague.</p>
+    <p>Along the way I've worked with Balmer Hählen in Lausanne and Marvil in Prague. I co-founded the label Pulse Records and make music as Nathan Solo (not Han Solo), a name that came from asking a friend what to call my solo project.</p>`;
   const cv = `<h3>Experience</h3><dl>
     <dt>2025–now</dt><dd>Senior Lead Designer, eeproperty, Lutry</dd>
     <dt>2012–now</dt><dd>Independent graphic and motion design practice</dd>
@@ -528,7 +552,7 @@ function openInfo(which) {
     <dt>2019</dt><dd>Mut zur Wut, finalist</dd>
     <dt>2019</dt><dd>Poster Tribune #10, featured portfolio</dd>
     <dt>2013</dt><dd>Best European Game Awards, nominations for art direction and game design</dd></dl>
-    <h3>Contact</h3>`;
+    <h3 id="contactInfo">Contact</h3>`;
   const contact = `<dl>
     <dt>Email</dt><dd><a id="mail" href="mailto:${EMAIL}" style="color:inherit">${EMAIL}</a><button id="copy">Copy</button></dd>
     <dt>Instagram</dt><dd><a href="https://instagram.com/matejmoravec_com" target="_blank" rel="noopener" style="color:inherit">@matejmoravec_com</a></dd>
@@ -538,9 +562,10 @@ function openInfo(which) {
     <dt>Posters</dt><dd><a href="https://www.typographicposters.com/matej-moravec/5f6de3ae13572f5cee1b819a" target="_blank" rel="noopener" style="color:inherit">typographicposters.com/matej-moravec</a></dd>
     <dt>Music</dt><dd><a href="https://nathansolo.com" target="_blank" rel="noopener" style="color:inherit">nathansolo.com</a></dd>
     <dt>Based in</dt><dd>Lausanne, Switzerland</dd></dl>`;
-  showSheet(`<div class="bar"><strong>${which === "about" ? "About" : "Contact"}</strong><button class="close">Close ×</button></div>
-    <div class="info">${which === "about" ? about + cv + contact : `<h2>Say hello.</h2>` + contact}</div>`);
-  setHash(which);
+  showSheet(`<div class="bar"><strong>About</strong><button class="close">Close ×</button></div>
+    <div class="info">${about + cv + contact}</div>`);
+  setHash("about");
+  if (which === "contact") requestAnimationFrame(() => $("#contactInfo").scrollIntoView({ block: "start" }));
   const copy = $("#copy");
   copy.addEventListener("click", () => {
     navigator.clipboard.writeText(EMAIL).then(() => { copy.textContent = "Copied"; }).catch(() => {
@@ -549,7 +574,6 @@ function openInfo(which) {
   });
 }
 $("#aboutBtn").addEventListener("click", () => openInfo("about"));
-$("#contactBtn").addEventListener("click", () => openInfo("contact"));
 $("#home").addEventListener("click", () => { closeSheet(); reset(); });
 addEventListener("hashchange", openFromHash);
 openFromHash();

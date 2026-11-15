@@ -97,7 +97,7 @@ dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 @media (max-width: 560px) { nav { gap: 16px; } }
 </style>
 </head><body>
-<header class="gut"><nav><a href="/">Matěj Moravec</a><a href="/">Works</a><a href="/about/">About</a><a href="/about/#contact">Contact</a></nav></header>
+<header class="gut"><nav><a href="/">Matěj Moravec</a><a href="/">Works</a><a href="/about/">About</a></nav></header>
 <main class="gut">
 ${body}
 </main>
