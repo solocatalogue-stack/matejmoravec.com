@@ -49,20 +49,20 @@ const paragraphs = p => [p.text, ...(p.more || []), ...p.shots.filter(f => f && 
 
 const EMAIL_JS = `<script>document.querySelectorAll(".mail").forEach(a => { const e = ["moc.cevaromjetam", "johA"].map(s => [...s].reverse().join("")).reverse().join(String.fromCharCode(64)).toLowerCase(); a.href = "mailto:" + e; a.textContent = e; });</script>`;
 
-const page = ({ path, title, description, image, imageAlt = title, body, jsonld, noindex, lang = "en", locale = "en_GB", css = "" }) => `<!doctype html>
+const page = ({ path, title, description, image, imageAlt = title, body, jsonld, noindex, lang = "en", locale = "en_GB", css = "", canonical }) => `<!doctype html>
 <html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="author" content="Matěj Moravec">
 <meta name="robots" content="${noindex ? "noindex" : "index, follow, max-image-preview:large"}">
-<link rel="canonical" href="${SITE}${path}">
+<link rel="canonical" href="${canonical || SITE + path}">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Matěj Moravec">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
-<meta property="og:url" content="${SITE}${path}">
+<meta property="og:url" content="${canonical || SITE + path}">
 <meta property="og:image" content="${SITE}${image}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -123,6 +123,8 @@ for (const p of pages) {
     : `<img src="${media(f)}" alt="${esc(p.title)} by Matěj Moravec: ${esc(tags.join(", ").toLowerCase())}, ${i + 1} of ${list.length}" loading="${i ? "lazy" : "eager"}">`).join("\n");
   write(`${p.slug}/index.html`, page({
     path, image,
+    // a project whose full page lives on another site of Matěj's points search engines there, so the two never compete
+    canonical: p.elsewhere ? p.link[0] : undefined,
     title: `${p.title} – ${tags[0]} by Matěj Moravec`,
     imageAlt: `${p.title} by Matěj Moravec`,
     description: short(p.text),
@@ -278,7 +280,7 @@ write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <url><loc>${SITE}/</loc><lastmod>${today}</lastmod><image:image><image:loc>${SITE}/assets/og.jpg</image:loc></image:image></url>
 <url><loc>${SITE}/about/</loc><lastmod>${today}</lastmod></url>
 <url><loc>${SITE}${TYPO}</loc><lastmod>${today}</lastmod></url>
-${pages.map(p => `<url><loc>${SITE}/${p.slug}/</loc><lastmod>${today}</lastmod>${imgs(files(p))}</url>`).join("\n")}
+${pages.filter(p => !p.elsewhere).map(p => `<url><loc>${SITE}/${p.slug}/</loc><lastmod>${today}</lastmod>${imgs(files(p))}</url>`).join("\n")}
 </urlset>
 `);
 
